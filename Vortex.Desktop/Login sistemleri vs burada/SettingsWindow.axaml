@@ -1,0 +1,241 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:conv="using:Avalonia.Data.Converters"
+        x:Class="Vortex.Desktop.SettingsWindow"
+        Width="850" Height="580"
+        MinWidth="800" MinHeight="500"
+        Title="Ayarlar"
+        Background="#08101E"
+        WindowStartupLocation="CenterOwner">
+  <Grid ColumnDefinitions="220,*">
+    <!-- Sol Kategori Menüsü -->
+    <Border Grid.Column="0" Background="#0C1525" BorderBrush="#173B55" BorderThickness="0,0,1,0" Padding="14">
+      <Grid RowDefinitions="*,Auto">
+        <ListBox Grid.Row="0" Background="Transparent" BorderThickness="0"
+                 ItemsSource="{Binding Categories}" SelectedItem="{Binding SelectedCategory}">
+          <ListBox.ItemTemplate>
+            <DataTemplate>
+              <TextBlock Text="{Binding}" Foreground="#F4FBFF" FontSize="13" Padding="6" FontWeight="SemiBold"/>
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+        <!-- Kapatma/Tamamlama Butonu -->
+        <Button Grid.Row="1" Content="Kapat" Click="CloseButton_Click" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Background="#1c2c4c"/>
+      </Grid>
+    </Border>
+
+    <!-- Sağ Detay Paneli -->
+    <Border Grid.Column="1" Padding="20">
+      <Grid>
+        <!-- General Category -->
+        <ScrollViewer IsVisible="{Binding IsGeneralSelected}">
+          <StackPanel Spacing="16">
+            <TextBlock Text="Genel Ayarlar" FontSize="20" FontWeight="Bold" Foreground="#3FD5FF" />
+            <Border Height="1" Background="#173B55" />
+            <CheckBox Content="Uygulama açılışında beni hatırla" IsChecked="{Binding RememberMe}" Foreground="#F4FBFF" />
+            <CheckBox Content="Çevrimdışı Mod (yerel şifreli SQLite, sunucu senkronu kapalı)" IsChecked="{Binding IsOfflineMode}" Foreground="#F4FBFF" />
+            <TextBlock Text="Çevrimdışı modda sohbetler sunucuya gönderilmez; veriler yalnızca bu bilgisayardaki şifreli yerel veritabanında tutulur." Foreground="#8EA8BC" FontSize="11" TextWrapping="Wrap" />
+            <StackPanel Spacing="6">
+              <TextBlock Text="Kullanıcı Depolama Alanı Kotası" Foreground="#9FB7C9" FontSize="12" FontWeight="SemiBold"/>
+              <ProgressBar Height="8" Maximum="5368709120" Value="{Binding StorageUsedBytes}" Foreground="#3FD5FF" Background="#111A2A" CornerRadius="4" />
+              <TextBlock Text="{Binding StorageQuotaText}" Foreground="#8EA8BC" FontSize="11" />
+              <TextBlock Text="Kota uyarısı: 5 GB depolama sınırına yaklaştığınızda uyarı alırsınız. İhtiyaç halinde arşivleyin veya silin." Foreground="#F87171" FontSize="11" TextWrapping="Wrap" />
+            </StackPanel>
+          </StackPanel>
+        </ScrollViewer>
+
+        <!-- Appearance Category -->
+        <ScrollViewer IsVisible="{Binding IsAppearanceSelected}">
+          <StackPanel Spacing="16">
+            <TextBlock Text="Görünüm ve Ölçek Ayarları" FontSize="20" FontWeight="Bold" Foreground="#3FD5FF" />
+            <Border Height="1" Background="#173B55" />
+
+            <TextBlock Text="Tema Seçimi" Foreground="#9FB7C9" FontSize="12" FontWeight="SemiBold"/>
+            <ComboBox ItemsSource="{Binding ThemePreferenceOptions}" SelectedItem="{Binding SelectedThemePreference}" HorizontalAlignment="Stretch" />
+            <TextBlock Text="Sistem teması Avalonia Fluent kontrollerini etkiler; özel Vortex panel renkleri şu an koyu paleti kullanır."
+                       Foreground="#7A93A8" FontSize="11" TextWrapping="Wrap"/>
+
+            <!-- Arayüz Ölçeği bölümü -->
+            <TextBlock Text="Ana Arayüz Ölçeği" Foreground="#9FB7C9" FontSize="12" FontWeight="SemiBold" Margin="0,10,0,0"/>
+            <ComboBox ItemsSource="{Binding MainUiScales}" SelectedItem="{Binding SelectedMainUiScale}" HorizontalAlignment="Stretch" />
+
+            <TextBlock Text="Compact Bar Ölçeği" Foreground="#9FB7C9" FontSize="12" FontWeight="SemiBold" Margin="0,10,0,0"/>
+            <ComboBox ItemsSource="{Binding CompactUiScales}" SelectedItem="{Binding SelectedCompactUiScale}" HorizontalAlignment="Stretch" />
+          </StackPanel>
+        </ScrollViewer>
+
+        <!-- Voice Category -->
+        <ScrollViewer IsVisible="{Binding IsVoiceSelected}">
+          <StackPanel Spacing="16">
+            <TextBlock Text="Ses ve Mikrofon Ayarları" FontSize="20" FontWeight="Bold" Foreground="#3FD5FF" />
+            <Border Height="1" Background="#173B55" />
+            <CheckBox Content="Sürekli Dinleme (Yerel transkript kapısı)" IsChecked="{Binding IsAlwaysListening}" Foreground="#F4FBFF"/>
+            <TextBlock Text="{Binding WakeWordEngineStatusText}" Foreground="#FBBF24" FontSize="11" TextWrapping="Wrap"/>
+
+            <TextBlock Text="Mikrofon Giriş Cihazı Seçimi" Foreground="#9FB7C9" FontSize="12" FontWeight="SemiBold"/>
+            <ComboBox ItemsSource="{Binding AudioInputDevices}" SelectedItem="{Binding SelectedInputDevice}" HorizontalAlignment="Stretch" />
+
+            <TextBlock Text="Mikrofon Ses Seviyesi (Hassasiyet)" Foreground="#9FB7C9" FontSize="12" FontWeight="SemiBold"/>
+            <Slider Minimum="0" Maximum="2" Value="{Binding InputVolume}" />
+
+            <TextBlock Text="Hoparlör Ses Çıkış Cihazı Seçimi" Foreground="#9FB7C9" FontSize="12" FontWeight="SemiBold"/>
+            <ComboBox ItemsSource="{Binding AudioOutputDevices}" SelectedItem="{Binding SelectedOutputDevice}" HorizontalAlignment="Stretch" />
+
+            <TextBlock Text="Hoparlör Ses Seviyesi" Foreground="#9FB7C9" FontSize="12" FontWeight="SemiBold"/>
+            <Slider Minimum="0" Maximum="2" Value="{Binding OutputVolume}" />
+
+            <CheckBox Content="Gürültü Engelleme Aktif" IsChecked="{Binding NoiseCancellationEnabled}" Foreground="#F4FBFF"/>
+            <CheckBox Content="Otomatik Sesli Yanıt (Final Yanıtını Oku)" IsChecked="{Binding AutoVoiceReplyEnabled}" Foreground="#F4FBFF"/>
+
+            <TextBlock Text="VAD (Ses Aktivite Algılama) Hassasiyeti" Foreground="#9FB7C9" FontSize="12" FontWeight="SemiBold"/>
+            <Slider Minimum="0" Maximum="1" Value="{Binding VadThreshold}" />
+
+            <TextBlock Text="Whisper.cpp Modeli" Foreground="#9FB7C9" FontSize="12" FontWeight="SemiBold"/>
+            <ComboBox SelectedIndex="{Binding WhisperModelIndex}" HorizontalAlignment="Stretch">
+              <ComboBoxItem Content="Base — Düşük donanım" />
+              <ComboBoxItem Content="Small — Dengeli (önerilen)" />
+              <ComboBoxItem Content="Medium — Yüksek doğruluk" />
+            </ComboBox>
+            <TextBlock Text="{Binding WhisperModelSizeText}" Foreground="#8EA8BC" FontSize="11"/>
+            <Button Content="Whisper Modelini İndir" Command="{Binding DownloadWhisperModelCommand}" HorizontalAlignment="Left" Background="#1c2c4c"/>
+
+            <TextBlock Text="Kokoro Yerel TTS Önerisi" Foreground="#9FB7C9" FontSize="12" FontWeight="SemiBold"/>
+            <Border Background="#071A33" BorderBrush="#1D4ED8" BorderThickness="1" CornerRadius="8" Padding="10">
+              <StackPanel Spacing="8">
+                <TextBlock Text="{Binding KokoroStatusText}" Foreground="#BFDBFE" TextWrapping="Wrap"/>
+                <Button Content="İndir - Önerilen" Command="{Binding OpenKokoroInstallPageCommand}" Background="#0B3A75" Foreground="#FFFFFF" HorizontalAlignment="Left"/>
+              </StackPanel>
+            </Border>
+          </StackPanel>
+        </ScrollViewer>
+
+        <!-- AI Models Category -->
+        <ScrollViewer IsVisible="{Binding IsAiModelsSelected}">
+          <StackPanel Spacing="16">
+            <TextBlock Text="Yapay Zeka Modelleri" FontSize="20" FontWeight="Bold" Foreground="#3FD5FF" />
+            <Border Height="1" Background="#173B55" />
+            <TextBlock Text="Varsayılan Sohbet Modeli" Foreground="#9FB7C9" FontSize="12" FontWeight="SemiBold"/>
+            <ComboBox SelectedIndex="0" HorizontalAlignment="Stretch">
+              <ComboBoxItem Content="gpt-4o-mini" />
+              <ComboBoxItem Content="gpt-4o" />
+            </ComboBox>
+          </StackPanel>
+        </ScrollViewer>
+
+        <!-- Providers Category -->
+        <ScrollViewer IsVisible="{Binding IsProvidersSelected}">
+          <StackPanel Spacing="16">
+            <TextBlock Text="Sağlayıcı Yapılandırmaları" FontSize="20" FontWeight="Bold" Foreground="#3FD5FF" />
+            <Border Height="1" Background="#173B55" />
+            <TextBlock Text="Vortex bulut ve yerel proxy sağlayıcıları listesi." Foreground="#8EA8BC" FontSize="12" />
+
+            <TextBlock Text="ElevenLabs TTS Yapılandırması" FontSize="16" FontWeight="SemiBold" Foreground="#3FD5FF" Margin="0,10,0,0" />
+            <CheckBox Content="ElevenLabs TTS Etkin" IsChecked="{Binding ElevenLabsTtsEnabled}" Foreground="#F4FBFF" />
+            <StackPanel Spacing="6">
+              <TextBlock Text="API Anahtarı (API Key)" Foreground="#9FB7C9" FontSize="12" FontWeight="SemiBold" />
+              <TextBox PasswordChar="*" Text="{Binding ElevenLabsApiKey}" />
+            </StackPanel>
+            <StackPanel Spacing="6">
+              <TextBlock Text="Ses Kimliği (Voice ID)" Foreground="#9FB7C9" FontSize="12" FontWeight="SemiBold" />
+              <TextBox Text="{Binding ElevenLabsVoiceId}" />
+            </StackPanel>
+
+            <TextBlock Text="MinMax TTS Yapılandırması" FontSize="16" FontWeight="SemiBold" Foreground="#3FD5FF" Margin="0,20,0,0" />
+            <CheckBox Content="MinMax TTS Etkin" IsChecked="{Binding MinMaxTtsEnabled}" Foreground="#F4FBFF" />
+            <StackPanel Spacing="6">
+              <TextBlock Text="API Anahtarı (API Key)" Foreground="#9FB7C9" FontSize="12" FontWeight="SemiBold" />
+              <TextBox PasswordChar="*" Text="{Binding MinMaxApiKey}" />
+            </StackPanel>
+            <StackPanel Spacing="6">
+              <TextBlock Text="Ses Kimliği (Voice ID)" Foreground="#9FB7C9" FontSize="12" FontWeight="SemiBold" />
+              <TextBox Text="{Binding MinMaxTtsVoiceId}" />
+            </StackPanel>
+            <StackPanel Spacing="6">
+              <TextBlock Text="Model Kimliği (Model ID)" Foreground="#9FB7C9" FontSize="12" FontWeight="SemiBold" />
+              <TextBox Text="{Binding MinMaxTtsModelId}" />
+            </StackPanel>
+          </StackPanel>
+        </ScrollViewer>
+
+        <!-- Workspace Category -->
+        <ScrollViewer IsVisible="{Binding IsWorkspaceSelected}">
+          <StackPanel Spacing="16">
+            <TextBlock Text="Workspace Alanı" FontSize="20" FontWeight="Bold" Foreground="#3FD5FF" />
+            <Border Height="1" Background="#173B55" />
+            <TextBlock Text="Çalışma Dizini Yetkilendirmeleri" Foreground="#9FB7C9" FontSize="12" FontWeight="SemiBold"/>
+            <TextBox Text="~/workspace" IsReadOnly="True" />
+
+            <TextBlock Text="LocalAgent Bağlantısı" FontSize="16" FontWeight="SemiBold" Foreground="#3FD5FF" Margin="0,12,0,0" />
+            <TextBlock Text="Doğrudan yerel LocalAgent (Hermes ve public Server gerekmez). Çevrimdışı modda da çalışır." Foreground="#8EA8BC" FontSize="12" TextWrapping="Wrap" />
+            <StackPanel Spacing="6">
+              <TextBlock Text="LocalAgent URL" Foreground="#9FB7C9" FontSize="12" FontWeight="SemiBold" />
+              <TextBox Text="{Binding LocalAgentBaseUrl}" PlaceholderText="http://127.0.0.1:47891" />
+            </StackPanel>
+            <StackPanel Spacing="6">
+              <TextBlock Text="LocalAgent Secret" Foreground="#9FB7C9" FontSize="12" FontWeight="SemiBold" />
+              <TextBox PasswordChar="*" Text="{Binding LocalAgentSecret}" />
+            </StackPanel>
+            <TextBlock Text="{Binding LocalAgentStatusText}" Foreground="#8EA8BC" FontSize="12" TextWrapping="Wrap" />
+            <Button Content="Test bağlantı" Command="{Binding TestLocalAgentConnectionCommand}" HorizontalAlignment="Left" Background="#1c2c4c" Foreground="#F4FBFF" Padding="12,6" />
+          </StackPanel>
+        </ScrollViewer>
+
+        <!-- Notifications Category -->
+        <ScrollViewer IsVisible="{Binding IsNotificationsSelected}">
+          <StackPanel Spacing="16">
+            <TextBlock Text="Bildirim Tercihleri" FontSize="20" FontWeight="Bold" Foreground="#3FD5FF" />
+            <Border Height="1" Background="#173B55" />
+            <CheckBox Content="Ses bittiğinde bildirim sesi çal" IsChecked="True" Foreground="#F4FBFF" />
+          </StackPanel>
+        </ScrollViewer>
+
+        <!-- Advanced Category -->
+        <ScrollViewer IsVisible="{Binding IsAdvancedSelected}">
+          <StackPanel Spacing="16">
+            <TextBlock Text="Gelişmiş Seçenekler" FontSize="20" FontWeight="Bold" Foreground="#3FD5FF" />
+            <Border Height="1" Background="#173B55" />
+            <Button Content="Tüm Yerel Önbelleği Temizle" HorizontalAlignment="Stretch" Background="#1c2c4c"/>
+          </StackPanel>
+        </ScrollViewer>
+
+        <!-- About Category -->
+        <ScrollViewer IsVisible="{Binding IsAboutSelected}">
+          <StackPanel Spacing="16">
+            <TextBlock Text="Vortex Hakkında" FontSize="20" FontWeight="Bold" Foreground="#3FD5FF" />
+            <Border Height="1" Background="#173B55" />
+            <TextBlock Text="Vortex Yapay Zeka Asistanı" FontSize="15" FontWeight="SemiBold" Foreground="#F4FBFF" />
+            <TextBlock Text="Sürüm: v1.0.0-beta" Foreground="#8EA8BC" />
+            <TextBlock Text="© 2026 Vortex Team. Tüm hakları saklıdır." Foreground="#8EA8BC" />
+          </StackPanel>
+        </ScrollViewer>
+
+        <!-- Archived Chats Category -->
+        <Grid IsVisible="{Binding IsArchivedChatsSelected}" RowDefinitions="Auto,*,Auto">
+          <StackPanel Grid.Row="0" Spacing="8" Margin="0,0,0,10">
+            <TextBlock Text="Arşivlenmiş Sohbetler" FontSize="20" FontWeight="Bold" Foreground="#3FD5FF" />
+            <Border Height="1" Background="#173B55" />
+            <TextBox PlaceholderText="Arşivde ara..." Text="{Binding ArchivedSearchText}" />
+          </StackPanel>
+
+          <ScrollViewer Grid.Row="1">
+            <ItemsControl ItemsSource="{Binding ArchivedChats}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                  <Border Background="#111A2A" CornerRadius="8" Padding="10" Margin="0,0,0,6" BorderBrush="#173B55" BorderThickness="1">
+                    <Grid ColumnDefinitions="*,Auto,Auto">
+                      <TextBlock Grid.Column="0" Text="{Binding Title}" Foreground="#F4FBFF" FontSize="13" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                      <Button Grid.Column="1" Content="Geri Al" Command="{Binding $parent[Window].DataContext.UnarchiveChatCommand}" CommandParameter="{Binding}" Margin="0,0,8,0" Background="#1c2c4c"/>
+                      <Button Grid.Column="2" Content="Sil" Command="{Binding $parent[Window].DataContext.DeleteChatCommand}" CommandParameter="{Binding}" Foreground="#F87171" Background="#1c2c4c"/>
+                    </Grid>
+                  </Border>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </ScrollViewer>
+
+          <TextBlock Grid.Row="2" Text="{Binding ArchivedChatsStatusText}" Foreground="#8EA8BC" FontSize="12" Margin="0,10,0,0" TextAlignment="Center"/>
+        </Grid>
+      </Grid>
+    </Border>
+  </Grid>
+</Window>

@@ -1,0 +1,22 @@
+@page "/register"
+@model Vortex.Web.Pages.RegisterModel
+@{
+    ViewData["Title"] = "Hesap oluştur";
+}
+
+<section class="auth-card">
+    <p class="text-uppercase text-info fw-semibold">Vortex</p>
+    <h1>Hesap oluştur</h1>
+    <p class="text-muted">Yalnızca public server tarafından desteklenen hesap alanları istenir.</p>
+    @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage)) { <div class="alert alert-danger" role="alert">@Model.ErrorMessage</div> }
+    <form method="post">
+        <input type="hidden" asp-for="ReturnUrl" />
+        <div class="mb-3"><label class="form-label" asp-for="DisplayName">Görünen ad</label><input class="form-control" asp-for="DisplayName" autocomplete="nickname" required /></div>
+        <div class="row"><div class="col-md-6 mb-3"><label class="form-label" asp-for="FirstName">Ad <span class="text-muted">(isteğe bağlı)</span></label><input class="form-control" asp-for="FirstName" autocomplete="given-name" /></div><div class="col-md-6 mb-3"><label class="form-label" asp-for="LastName">Soyad <span class="text-muted">(isteğe bağlı)</span></label><input class="form-control" asp-for="LastName" autocomplete="family-name" /></div></div>
+        <div class="mb-3"><label class="form-label" asp-for="Email">E-posta</label><input class="form-control" asp-for="Email" type="email" autocomplete="email" required /></div>
+        <div class="mb-3"><label class="form-label" asp-for="Password">Parola</label><input class="form-control" asp-for="Password" type="password" minlength="8" autocomplete="new-password" required /></div>
+        <div class="mb-3"><label class="form-label" asp-for="ConfirmPassword">Parola tekrarı</label><input class="form-control" asp-for="ConfirmPassword" type="password" minlength="8" autocomplete="new-password" required /></div>
+        <button type="submit" class="btn btn-primary w-100">Hesap oluştur</button>
+    </form>
+    <p class="mt-3 mb-0 text-center">Hesabınız var mı? <a asp-page="/Login" asp-route-ReturnUrl="@Model.ReturnUrl">Giriş yapın</a>.</p>
+</section>

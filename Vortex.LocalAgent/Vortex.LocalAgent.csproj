@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <ItemGroup>
+    <ProjectReference Include="..\Vortex.Shared\Vortex.Shared.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseAppHost Condition="'$(RuntimeIdentifier)' == 'linux-x64'">true</UseAppHost>
+  </PropertyGroup>
+
+  <!-- ABI verification intermediates and local SSH material are never source or publish content. -->
+  <ItemGroup>
+    <Compile Remove="artifacts\**\*.cs;.vortex-ssh\**\*.cs" />
+    <Content Remove="artifacts\**;.vortex-ssh\**" />
+    <None Remove="artifacts\**;.vortex-ssh\**" />
+  </ItemGroup>
+</Project>

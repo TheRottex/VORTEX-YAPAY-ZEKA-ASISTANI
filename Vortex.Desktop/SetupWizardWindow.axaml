@@ -1,0 +1,99 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="Vortex.Desktop.SetupWizardWindow"
+        Title="Vortex Yapay Zeka Asistanı Kurulumu"
+        Width="680"
+        Height="520"
+        WindowStartupLocation="CenterScreen"
+        Background="#07101d">
+  <Grid RowDefinitions="Auto,*,Auto" Margin="28">
+    <StackPanel Spacing="6">
+      <TextBlock Text="Vortex Yapay Zeka Asistanı Kurulumu" FontSize="24" FontWeight="Bold"/>
+      <TextBlock Text="{Binding StepIndex, StringFormat='Adım {0} / 6'}" Foreground="#94a3b8" FontSize="16"/>
+    </StackPanel>
+
+    <ScrollViewer Grid.Row="1" Margin="0,20,0,20">
+      <StackPanel Spacing="16">
+        <StackPanel IsVisible="{Binding IsWelcomeStep}" Spacing="16">
+          <TextBlock Text="Hoş geldiniz" FontSize="20" FontWeight="Bold" Foreground="#e2e8f0"/>
+          <TextBlock Text="Vortex yerel ses ve güvenli genel API bağlantısını yapılandırır. Devam etmek için lisans bildirimini onaylayın." TextWrapping="Wrap" Foreground="#cbd5e1"/>
+          <TextBox Text="MIT License&#x0a;&#x0a;Copyright (c) 2026 Okan Özbay&#x0a;&#x0a;Permission is hereby granted, free of charge, to any person obtaining a copy&#x0a;of this software and associated documentation files (the &quot;Software&quot;), to deal&#x0a;in the Software without restriction, including without limitation the rights&#x0a;to use, copy, modify, merge, publish, distribute, sublicense, and/or sell&#x0a;copies of the Software, and to permit persons to whom the Software is&#x0a;furnished to do so, subject to the following conditions:&#x0a;&#x0a;The above copyright notice and this permission notice shall be included in all&#x0a;copies or substantial portions of the Software.&#x0a;&#x0a;THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR&#x0a;IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,&#x0a;FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE&#x0a;AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER&#x0a;LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,&#x0a;OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE&#x0a;SOFTWARE."
+                   Height="220" IsReadOnly="True" AcceptsReturn="True" TextWrapping="Wrap"
+                   Background="#101c2c" Foreground="#e2e8f0" BorderBrush="#334155"/>
+          <CheckBox Content="MIT lisans bildirimini okudum ve kabul ediyorum" IsChecked="{Binding AcceptLicense}"/>
+        </StackPanel>
+
+        <StackPanel IsVisible="{Binding IsNetworkStep}" Spacing="10">
+          <TextBlock Text="Ağ ve proxy" FontSize="20" FontWeight="Bold" Foreground="#e2e8f0"/>
+          <TextBlock Text="İsteğe bağlı proxy ayarını kaydedip tanılamayı gerçek ağ ayarlarıyla çalıştırın." TextWrapping="Wrap" Foreground="#cbd5e1"/>
+          <ComboBox ItemsSource="{Binding ProxyModes}" SelectedItem="{Binding ProxyMode}"/>
+          <TextBox PlaceholderText="HTTP proxy URL" Text="{Binding ManualHttpProxyUrl}"/>
+          <TextBox PlaceholderText="HTTPS proxy URL" Text="{Binding ManualHttpsProxyUrl}"/>
+          <TextBox PlaceholderText="Proxy kullanıcı adı" Text="{Binding ProxyUsername}"/>
+          <TextBox PlaceholderText="Proxy parolası" PasswordChar="●" Text="{Binding ProxyPassword}"/>
+          <Button Content="Ağ Tanılamasını Çalıştır" Command="{Binding RunNetworkDiagnosticsCommand}" HorizontalAlignment="Left" Padding="12,6"/>
+          <TextBlock Text="{Binding NetworkStatus}" TextWrapping="Wrap" Foreground="#cbd5e1"/>
+        </StackPanel>
+
+        <StackPanel IsVisible="{Binding IsAccountStep}" Spacing="10">
+          <TextBlock Text="Hesap" FontSize="20" FontWeight="Bold" Foreground="#e2e8f0"/>
+          <TextBlock Text="{Binding AccountStatus}" TextWrapping="Wrap" Foreground="#cbd5e1"/>
+        </StackPanel>
+
+        <StackPanel IsVisible="{Binding IsLocalAgentStep}" Spacing="10">
+          <TextBlock Text="Yerel yardımcı" FontSize="20" FontWeight="Bold" Foreground="#e2e8f0"/>
+          <Border Background="#101c2c" BorderBrush="#334155" BorderThickness="1" CornerRadius="8" Padding="12">
+            <StackPanel Spacing="8">
+              <TextBlock Text="{Binding LocalAgentStatus}" TextWrapping="Wrap" Foreground="#cbd5e1"/>
+              <StackPanel Orientation="Horizontal" Spacing="8">
+                <Button Content="Yerel Yardımcıyı Test Et" Command="{Binding TestLocalAgentCommand}" Padding="12,6"/>
+                <Button Content="Yerel Yardımcıyı Atla" Command="{Binding SkipLocalAgentCommand}" Padding="12,6"/>
+              </StackPanel>
+            </StackPanel>
+          </Border>
+        </StackPanel>
+
+        <StackPanel IsVisible="{Binding IsVoiceStep}" Spacing="10">
+          <TextBlock Text="Pardus ses hazırlığı" FontSize="20" FontWeight="Bold" Foreground="#e2e8f0"/>
+          <TextBlock Text="Bu ekran yalnızca ortamda bulunan bileşenleri gösterir. Mikrofon, gerçek kayıt yapılana kadar test edilmemiş kalır." TextWrapping="Wrap" Foreground="#cbd5e1"/>
+          <Button Content="Ses Hazırlığını Yenile" Command="{Binding RefreshVoiceReadinessCommand}" HorizontalAlignment="Left" Padding="12,6"/>
+          <ItemsControl ItemsSource="{Binding VoiceReadiness}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate>
+                <Border Background="#101c2c" BorderBrush="#334155" BorderThickness="1" CornerRadius="8" Padding="10" Margin="0,0,0,6">
+                  <StackPanel Spacing="3">
+                    <TextBlock Text="{Binding Name}" FontWeight="SemiBold" Foreground="#e2e8f0"/>
+                    <TextBlock Text="{Binding State}" Foreground="#fbbf24"/>
+                    <TextBlock Text="{Binding Detail}" TextWrapping="Wrap" Foreground="#cbd5e1"/>
+                  </StackPanel>
+                </Border>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </StackPanel>
+
+        <StackPanel IsVisible="{Binding IsSummaryStep}" Spacing="10">
+          <TextBlock Text="Kurulum özeti" FontSize="20" FontWeight="Bold" Foreground="#e2e8f0"/>
+          <TextBlock Text="{Binding ProxyMode, StringFormat='Proxy modu: {0}'}" Foreground="#cbd5e1"/>
+          <TextBlock Text="{Binding NetworkStatus}" TextWrapping="Wrap" Foreground="#cbd5e1"/>
+          <TextBlock Text="{Binding AccountStatus}" TextWrapping="Wrap" Foreground="#cbd5e1"/>
+          <TextBlock Text="{Binding LocalAgentStatus}" TextWrapping="Wrap" Foreground="#cbd5e1"/>
+          <ItemsControl ItemsSource="{Binding VoiceReadiness}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate>
+                <TextBlock Text="{Binding Name, StringFormat='Ses hazırlığı: {0}'}" Foreground="#cbd5e1"/>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </StackPanel>
+      </StackPanel>
+    </ScrollViewer>
+
+    <Grid Grid.Row="2" ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
+      <TextBlock Text="{Binding FinishStatus}" Foreground="#ef4444" VerticalAlignment="Center" TextWrapping="Wrap"/>
+      <Button Grid.Column="1" Content="Geri" Command="{Binding BackCommand}" IsVisible="{Binding CanGoBack}" Padding="16,8"/>
+      <Button Grid.Column="2" Content="İleri" Command="{Binding NextCommand}" IsVisible="{Binding IsNotLastStep}" Padding="16,8" Background="#1e3a8a" Foreground="White"/>
+      <Button Grid.Column="2" Content="Kurulumu Tamamla ve Başlat" Command="{Binding FinishCommand}" IsVisible="{Binding IsSummaryStep}" Padding="16,8" Background="#1e3a8a" Foreground="White"/>
+    </Grid>
+  </Grid>
+</Window>

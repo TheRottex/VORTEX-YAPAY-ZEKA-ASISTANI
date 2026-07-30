@@ -1,0 +1,39 @@
+@page "/dashboard"
+@model Vortex.Web.Pages.DashboardModel
+@{
+    ViewData["Title"] = "Panel";
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <p class="text-uppercase text-info fw-semibold mb-1">Vortex</p>
+            <h1 class="h3 mb-0">Hesap paneli</h1>
+        </div>
+        <form method="post" asp-page="/Logout">
+            <button class="btn btn-outline-secondary btn-sm" type="submit">Oturumu kapat</button>
+        </form>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-5">
+            <section class="card h-100"><div class="card-body">
+                <h2 class="h5">Profil</h2>
+                @if (Model.Profile is { } profile)
+                {
+                    <p class="mb-1 fw-semibold">@profile.DisplayName</p>
+                    <p class="mb-1 text-muted">@profile.Email</p>
+                    <p class="mb-0"><span class="badge text-bg-secondary">@profile.Role</span></p>
+                }
+                else { <p class="text-muted mb-0">Profil bilgisi şu anda yüklenemedi.</p> }
+            </div></section>
+        </div>
+        <div class="col-md-7">
+            <section class="card h-100"><div class="card-body">
+                <h2 class="h5">Kayıtlı cihazlar</h2>
+                @if (Model.Devices.Count == 0) { <p class="text-muted mb-0">Kayıtlı cihaz yok.</p> }
+                else { <ul class="list-group list-group-flush">@foreach (var device in Model.Devices) { <li class="list-group-item px-0 d-flex justify-content-between"><span>@device.DeviceName</span><small class="text-muted">@(device.LastSeenAt is { } seen ? $"Son görülme: {seen.LocalDateTime:g}" : "Henüz bağlanmadı")</small></li> }</ul> }
+            </div></section>
+        </div>
+    </div>
+</div>

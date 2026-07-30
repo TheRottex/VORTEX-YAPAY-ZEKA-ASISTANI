@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\Vortex.Shared\Vortex.Shared.csproj" />
+  </ItemGroup>
+
+  <!-- Desktop ABI verification artifacts are generated payloads, not Worker source. -->
+  <ItemGroup>
+    <Compile Remove="artifacts\**\*.cs" />
+    <None Include="artifacts\**\*" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+</Project>

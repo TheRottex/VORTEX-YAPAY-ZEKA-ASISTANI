@@ -1,0 +1,566 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:conv="using:Avalonia.Data.Converters"
+        x:Class="Vortex.Desktop.MainWindow"
+        Width="1380" Height="860"
+        MinWidth="1120" MinHeight="700"
+        Title="VORTEX YAPAY ZEKA ASİSTANI"
+        Background="#080d19">
+  <Window.Styles>
+    <!-- Modern Button Styling -->
+    <Style Selector="Button">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="Foreground" Value="#dff8ff" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="Padding" Value="8" />
+      <Setter Property="CornerRadius" Value="6" />
+      <Setter Property="Cursor" Value="Hand" />
+    </Style>
+    <Style Selector="Button:pointerover">
+      <Setter Property="Background" Value="#15263d" />
+    </Style>
+
+    <!-- Modern TextBox Styling -->
+    <Style Selector="TextBox">
+      <Setter Property="Background" Value="#0b1322" />
+      <Setter Property="Foreground" Value="#f1f5f9" />
+      <Setter Property="BorderBrush" Value="#1c2c4c" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="6" />
+      <Setter Property="Padding" Value="10,8" />
+    </Style>
+
+    <!-- Hover states for Sidebar Chat Items -->
+    <Style Selector="Border.ChatItem">
+      <Setter Property="Background" Value="Transparent" />
+    </Style>
+    <Style Selector="Border.ChatItem:pointerover">
+      <Setter Property="Background" Value="#101b2d" />
+    </Style>
+
+    <!-- Hide hover actions by default, show on hover -->
+    <Style Selector="Border.ChatItem Grid StackPanel.HoverActions">
+      <Setter Property="Opacity" Value="0.0" />
+    </Style>
+    <Style Selector="Border.ChatItem:pointerover Grid StackPanel.HoverActions">
+      <Setter Property="Opacity" Value="1.0" />
+    </Style>
+
+    <!-- LinkLabel Button Styling -->
+    <Style Selector="Button.LinkLabel">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="Padding" Value="2" />
+      <Setter Property="Foreground" Value="#60a5fa" />
+      <Setter Property="Cursor" Value="Hand" />
+    </Style>
+    <Style Selector="Button.LinkLabel:pointerover">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="Foreground" Value="#93c5fd" />
+      <Setter Property="TextBlock.TextDecorations" Value="Underline" />
+    </Style>
+  </Window.Styles>
+
+  <Grid Background="#050811">
+    <!-- Welcome/Auth Screen -->
+    <Grid IsVisible="{Binding IsWelcomeVisible}">
+      <Ellipse Width="760" Height="760" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,-260,0,0" Opacity="0.35">
+        <Ellipse.Fill>
+          <RadialGradientBrush>
+            <GradientStop Color="#3FD5FF" Offset="0" />
+            <GradientStop Color="#003FD5FF" Offset="1" />
+          </RadialGradientBrush>
+        </Ellipse.Fill>
+        <Ellipse.Effect><BlurEffect Radius="90" /></Ellipse.Effect>
+      </Ellipse>
+      <Border Background="#111A2A" CornerRadius="20" Padding="20" MaxWidth="420" HorizontalAlignment="Center" VerticalAlignment="Center" BorderBrush="#23445F" BorderThickness="1">
+        <StackPanel Spacing="10">
+          <Image Source="avares://Vortex.Desktop/Assets/VortexOrb.png" Width="84" Height="84" HorizontalAlignment="Center" Margin="0,0,0,8" />
+          <TextBlock Text="VORTEX YAPAY ZEKA ASİSTANI" FontSize="18" FontWeight="Bold" Foreground="#3FD5FF" HorizontalAlignment="Center" TextAlignment="Center" />
+          <TextBlock Text="{Binding AuthScreenTitle}" FontSize="24" FontWeight="Bold" Foreground="#F4FBFF" HorizontalAlignment="Center" />
+          <TextBlock Text="{Binding AuthScreenDescription}" TextWrapping="Wrap" Foreground="#8EA8BC" TextAlignment="Center" />
+          <TextBlock Text="{Binding AuthFormErrorText}" IsVisible="{Binding AuthFormErrorText, Converter={x:Static conv:StringConverters.IsNotNullOrEmpty}}" TextWrapping="Wrap" Foreground="#F87171" TextAlignment="Center" />
+
+          <!-- Login Form Container -->
+          <StackPanel Spacing="10" IsVisible="{Binding IsLoginMode}">
+            <TextBox PlaceholderText="E-posta adresi" Text="{Binding Email}" />
+            <TextBox PlaceholderText="Parola" Text="{Binding Password}" PasswordChar="*" />
+            <CheckBox Content="Bu bilgisayarda beni hatırla" IsChecked="{Binding RememberMe}" Foreground="#F4FBFF" />
+            <Button Content="Giriş Yap" Command="{Binding LoginCommand}" HorizontalAlignment="Stretch" FontWeight="Bold" Background="#1D4ED8" Foreground="White" HorizontalContentAlignment="Center" Margin="0,8,0,0" Padding="12" />
+            <Button Content="Çevrim Dışı Modda Devam Et" Command="{Binding ContinueOfflineCommand}" HorizontalAlignment="Stretch" FontWeight="SemiBold" Background="#0B3A75" Foreground="#BFDBFE" HorizontalContentAlignment="Center" Padding="11" />
+
+            <Grid ColumnDefinitions="*,Auto,*" Margin="0,4">
+              <Line Grid.Column="0" StartPoint="0,0" EndPoint="1,0" Stretch="Fill" Stroke="#3FD5FF" StrokeThickness="1" StrokeDashArray="4,3" Opacity="0.45" VerticalAlignment="Center" />
+              <TextBlock Grid.Column="1" Text="veya" Foreground="#64748B" Margin="10,0" />
+              <Line Grid.Column="2" StartPoint="0,0" EndPoint="1,0" Stretch="Fill" Stroke="#3FD5FF" StrokeThickness="1" StrokeDashArray="4,3" Opacity="0.45" VerticalAlignment="Center" />
+            </Grid>
+
+            <Button Content="Google ile devam et" Command="{Binding ContinueWithGoogleCommand}" HorizontalAlignment="Stretch" Background="#1e293b" Foreground="#f8fafc" HorizontalContentAlignment="Center" Padding="10" />
+            <Button Content="GitHub ile devam et" Command="{Binding ContinueWithGitHubCommand}" HorizontalAlignment="Stretch" Background="#1e293b" Foreground="#f8fafc" HorizontalContentAlignment="Center" Padding="10" />
+            <Button Content="Hesabınız yok mu? Hesap oluşturun" Command="{Binding ShowRegisterScreenCommand}" Background="Transparent" Foreground="#60a5fa" HorizontalAlignment="Center" Padding="4" Margin="0,8,0,0" />
+          </StackPanel>
+
+          <!-- Register Form Container -->
+          <StackPanel Spacing="10" IsVisible="{Binding IsRegisterMode}">
+            <TextBox PlaceholderText="Ad" Text="{Binding FirstName}" />
+            <TextBox PlaceholderText="Soyad" Text="{Binding LastName}" />
+            <TextBox PlaceholderText="Takma ad / görünen ad" Text="{Binding DisplayName}" />
+            <TextBox PlaceholderText="E-posta adresi" Text="{Binding Email}" />
+            <TextBox PlaceholderText="Parola" Text="{Binding Password}" PasswordChar="*" />
+            <TextBox PlaceholderText="Parola tekrarı" Text="{Binding ConfirmPassword}" PasswordChar="*" />
+            <TextBox PlaceholderText="Doğum tarihi (YYYY-AA-GG)" Text="{Binding BirthDate}" />
+            <Button Content="Hesap Oluştur" Command="{Binding RegisterCommand}" HorizontalAlignment="Stretch" FontWeight="Bold" Background="#1D4ED8" Foreground="White" HorizontalContentAlignment="Center" Margin="0,8,0,0" Padding="12" />
+            <Button Content="Zaten hesabınız var mı? Giriş yapın" Command="{Binding ShowLoginScreenCommand}" Background="Transparent" Foreground="#60a5fa" HorizontalAlignment="Center" Padding="4" Margin="0,8,0,0" />
+          </StackPanel>
+        </StackPanel>
+      </Border>
+    </Grid>
+
+    <!-- Authenticated Shell Redesign -->
+    <Grid x:Name="AuthenticatedShell" IsVisible="{Binding IsWelcomeVisible, Converter={x:Static conv:BoolConverters.Not}}" ColumnDefinitions="280, *, 360">
+
+      <!-- COLUMN 0: Left Sidebar -->
+      <Border Grid.Column="0" Background="#060b13" Padding="10, 20">
+        <Grid RowDefinitions="Auto, Auto, Auto, *, Auto">
+
+          <!-- App Title and Toggle -->
+          <Grid Grid.Row="0" Margin="0,0,0,20">
+            <!-- When NOT collapsed -->
+            <Grid ColumnDefinitions="*, Auto" IsVisible="{Binding IsSidebarCollapsed, Converter={x:Static conv:BoolConverters.Not}}">
+              <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                <!-- App logo icon -->
+                <Image Source="avares://Vortex.Desktop/Assets/VortexOrb.png" Width="36" Height="36" VerticalAlignment="Center" />
+                <TextBlock Text="VORTEX" Foreground="#ffffff" FontSize="16" FontWeight="Bold" LetterSpacing="0.05" VerticalAlignment="Center" />
+              </StackPanel>
+              <Button Grid.Column="1" Command="{Binding ToggleSidebarCommand}" Padding="4">
+                <PathIcon Data="M 3 18 h 18 v -2 H 3 v 2 z m 0 -5 h 18 v -2 H 3 v 2 z m 0 -7 v 2 h 18 V 6 H 3 z" Width="18" Height="18" Foreground="#8ea8bc" />
+              </Button>
+            </Grid>
+            <!-- When collapsed -->
+            <Button IsVisible="{Binding IsSidebarCollapsed}" Command="{Binding ToggleSidebarCommand}" Padding="4" HorizontalAlignment="Center" VerticalAlignment="Center">
+              <PathIcon Data="M 3 18 h 18 v -2 H 3 v 2 z m 0 -5 h 18 v -2 H 3 v 2 z m 0 -7 v 2 h 18 V 6 H 3 z" Width="18" Height="18" Foreground="#8ea8bc" />
+            </Button>
+          </Grid>
+
+          <!-- New Chat Button -->
+          <Button Grid.Row="1" Command="{Binding NewChatCommand}" Background="#0e1b2f" BorderBrush="#1e3a5f" BorderThickness="1" CornerRadius="8" HorizontalAlignment="Stretch" Margin="0,0,0,16" Padding="10, 12">
+            <Grid>
+              <Grid ColumnDefinitions="*, Auto" IsVisible="{Binding IsSidebarCollapsed, Converter={x:Static conv:BoolConverters.Not}}">
+                <TextBlock Grid.Column="0" Text="+ Yeni Sohbet" Foreground="#38bdf8" FontWeight="SemiBold" FontSize="14" VerticalAlignment="Center" />
+                <PathIcon Grid.Column="1" Data="M 3 17.25 V 21 h 3.75 L 17.81 9.94 l -3.75 -3.75 L 3 17.25 z M 20.71 7.04 c 0.39 -0.39 0.39 -1.02 0 -1.41 l -2.34 -2.34 c -0.39 -0.39 -1.02 -0.39 -1.41 0 l -1.83 1.83 3.75 3.75 1.83 -1.83 z" Width="16" Height="16" Foreground="#38bdf8" VerticalAlignment="Center" />
+              </Grid>
+              <PathIcon IsVisible="{Binding IsSidebarCollapsed}" Data="M 19 13 h -6 v 6 h -2 v -6 H 5 v -2 h 6 V 5 h 2 v 6 h 6 v 2 z" Width="16" Height="16" Foreground="#38bdf8" HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Grid>
+          </Button>
+
+          <!-- Search Bar -->
+          <Grid Grid.Row="2" Margin="0,0,0,20" IsVisible="{Binding IsSidebarCollapsed, Converter={x:Static conv:BoolConverters.Not}}">
+            <TextBox Text="{Binding SearchText}" PlaceholderText="Sohbetlerde ara..." Padding="10,8,44,8" CornerRadius="6" Background="#0c1322" BorderBrush="#1c2c4c" Foreground="#ffffff" />
+            <Border HorizontalAlignment="Right" VerticalAlignment="Center" Background="#1e293b" CornerRadius="4" Padding="5,2" Margin="0,0,10,0" IsHitTestVisible="False">
+              <TextBlock Text="Ctrl K" Foreground="#64748b" FontSize="10" FontWeight="Bold" />
+            </Border>
+          </Grid>
+
+          <!-- Chats & Favorites -->
+          <ScrollViewer Grid.Row="3" Margin="0,0,0,16">
+            <StackPanel Spacing="20">
+              <!-- SOHBETLER Section -->
+              <StackPanel Spacing="6">
+                <TextBlock Text="SOHBETLER" Foreground="#475569" FontSize="11" FontWeight="Bold" LetterSpacing="0.05" Margin="4,0,0,4" IsVisible="{Binding IsSidebarCollapsed, Converter={x:Static conv:BoolConverters.Not}}" />
+                <ItemsControl ItemsSource="{Binding Chats}">
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                      <Border Classes="ChatItem" CornerRadius="6" Margin="0,0,0,4" ClipToBounds="True">
+                        <Grid ColumnDefinitions="*, Auto">
+                          <!-- normal view when NOT editing -->
+                          <Button IsVisible="{Binding IsEditing, Converter={x:Static conv:BoolConverters.Not}}" Background="Transparent" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Padding="8,10" Command="{Binding $parent[Window].DataContext.SelectChatCommand}" CommandParameter="{Binding}">
+                            <Grid ColumnDefinitions="Auto, *, Auto">
+                              <PathIcon Grid.Column="0" Data="M 20 2 H 4 c -1.1 0 -1.99 0.9 -1.99 2 L 2 22 l 4 -4 h 14 c 1.1 0 2 -0.9 2 -2 V 4 c 0 -1.1 -0.9 -2 -2 -2 z M 6 9 h 12 v 2 H 6 V 9 z m 8 5 H 6 v -2 h 8 v 2 z m 4 -6 H 6 V 6 h 12 v 2 z" Width="14" Height="14" Foreground="#64748b" Margin="0,0,8,0" VerticalAlignment="Center" />
+                              <TextBlock Grid.Column="1" Text="{Binding Title}" Foreground="#cbd5e1" FontWeight="SemiBold" FontSize="13" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" IsVisible="{Binding $parent[Window].DataContext.IsSidebarCollapsed, Converter={x:Static conv:BoolConverters.Not}}" />
+                              <Ellipse Grid.Column="2" Width="6" Height="6" Fill="#3b82f6" Margin="4,0,0,0" VerticalAlignment="Center" IsVisible="{Binding IsSelected}" />
+                            </Grid>
+                          </Button>
+
+                          <!-- edit view when IsEditing is true -->
+                          <Grid IsVisible="{Binding IsEditing}" ColumnDefinitions="*, Auto, Auto" Margin="4">
+                            <TextBox Grid.Column="0" Text="{Binding EditTitle}" FontSize="12" Padding="6,4" Background="#0c1322" Foreground="#ffffff" BorderBrush="#1e3a5f" BorderThickness="1" CornerRadius="4" VerticalAlignment="Center" PlaceholderText="Sohbet adı..." />
+                            <Button Grid.Column="1" Command="{Binding $parent[Window].DataContext.CommitRenameChatCommand}" CommandParameter="{Binding}" Padding="4" Margin="2,0" Background="#1e3a5f">
+                              <PathIcon Data="M 9 16.17 L 4.83 12 l -1.42 1.41 L 9 19 21 7 l -1.41 -1.41 z" Width="12" Height="12" Foreground="#8ea8bc" />
+                            </Button>
+                            <Button Grid.Column="2" Command="{Binding $parent[Window].DataContext.CancelRenameChatCommand}" CommandParameter="{Binding}" Padding="4" Background="#1e3a5f">
+                              <PathIcon Data="M 19 6.41 L 17.59 5 L 12 10.59 L 6.41 5 L 5 6.41 L 10.59 12 L 5 17.59 L 6.41 19 L 12 13.41 L 17.59 19 L 19 17.59 L 13.41 12 z" Width="12" Height="12" Foreground="#ef4444" />
+                            </Button>
+                          </Grid>
+
+                          <!-- Hover Actions (Rename, Delete, Favorite in context) -->
+                          <StackPanel Grid.Column="1" Classes="HoverActions" Orientation="Horizontal" Spacing="2" VerticalAlignment="Center" Margin="0,0,6,0" IsVisible="{Binding IsEditing, Converter={x:Static conv:BoolConverters.Not}}">
+                            <StackPanel Orientation="Horizontal" Spacing="2" IsVisible="{Binding $parent[Window].DataContext.IsSidebarCollapsed, Converter={x:Static conv:BoolConverters.Not}}">
+                              <Button Padding="4" Background="Transparent" Command="{Binding $parent[Window].DataContext.StartRenameChatCommand}" CommandParameter="{Binding}">
+                                <PathIcon Data="M 3 17.25 V 21 h 3.75 L 17.81 9.94 l -3.75 -3.75 L 3 17.25 z M 20.71 7.04 c 0.39 -0.39 0.39 -1.02 0 -1.41 l -2.34 -2.34 c -0.39 -0.39 -1.02 -0.39 -1.41 0 l -1.83 1.83 3.75 3.75 1.83 -1.83 z" Width="12" Height="12" Foreground="#8ea8bc" />
+                              </Button>
+                              <Button Padding="4" Background="Transparent" Command="{Binding $parent[Window].DataContext.ToggleFavoriteCommand}" CommandParameter="{Binding}">
+                                <PathIcon Data="M 12 17.27 L 18.18 21 l -1.64 -7.03 L 22 9.24 l -7.19 -0.61 L 12 2 L 9.19 8.63 L 2 9.24 l 5.46 4.73 L 5.82 21 z" Width="12" Height="12" Foreground="{Binding FavoriteColor}" />
+                              </Button>
+                              <Button Padding="4" Background="Transparent" Command="{Binding $parent[Window].DataContext.DeleteChatCommand}" CommandParameter="{Binding}">
+                                <PathIcon Data="M 19 6.41 L 17.59 5 L 12 10.59 L 6.41 5 L 5 6.41 L 10.59 12 L 5 17.59 L 6.41 19 L 12 13.41 L 17.59 19 L 19 17.59 L 13.41 12 z" Width="12" Height="12" Foreground="#ef4444" />
+                              </Button>
+                            </StackPanel>
+                          </StackPanel>
+                        </Grid>
+                      </Border>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+              </StackPanel>
+
+              <!-- FAVORİLER Section -->
+              <StackPanel Spacing="6">
+                <TextBlock Text="FAVORİLER" Foreground="#475569" FontSize="11" FontWeight="Bold" LetterSpacing="0.05" Margin="4,0,0,4" IsVisible="{Binding IsSidebarCollapsed, Converter={x:Static conv:BoolConverters.Not}}" />
+                <ItemsControl ItemsSource="{Binding Chats}">
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                      <Border IsVisible="{Binding IsFavorite}" Classes="ChatItem" CornerRadius="6" Margin="0,0,0,4">
+                        <Button Background="Transparent" HorizontalAlignment="Stretch" Padding="8,10" Command="{Binding $parent[Window].DataContext.SelectChatCommand}" CommandParameter="{Binding}">
+                          <Grid ColumnDefinitions="Auto, *">
+                            <PathIcon Grid.Column="0" Data="M 12 17.27 L 18.18 21 l -1.64 -7.03 L 22 9.24 l -7.19 -0.61 L 12 2 L 9.19 8.63 L 2 9.24 l 5.46 4.73 L 5.82 21 z" Width="14" Height="14" Foreground="#eab308" Margin="0,0,8,0" VerticalAlignment="Center" />
+                            <TextBlock Grid.Column="1" Text="{Binding Title}" Foreground="#cbd5e1" FontSize="13" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" IsVisible="{Binding $parent[Window].DataContext.IsSidebarCollapsed, Converter={x:Static conv:BoolConverters.Not}}" />
+                          </Grid>
+                        </Button>
+                      </Border>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+              </StackPanel>
+            </StackPanel>
+          </ScrollViewer>
+
+          <!-- Profile Area (Bottom) -->
+          <Border Grid.Row="4" Background="#0b1322" CornerRadius="12" Padding="12,10" BorderBrush="#1e2c4c" BorderThickness="1">
+            <Grid>
+              <!-- When NOT collapsed -->
+              <Grid ColumnDefinitions="Auto, *, Auto, Auto" IsVisible="{Binding IsSidebarCollapsed, Converter={x:Static conv:BoolConverters.Not}}">
+                <Border Grid.Column="0" Width="36" Height="36" CornerRadius="18" Background="#1d4ed8" VerticalAlignment="Center">
+                  <TextBlock Text="VA" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="12" FontWeight="Bold" />
+                </Border>
+                <StackPanel Grid.Column="1" Margin="10,0" VerticalAlignment="Center" Spacing="1">
+                  <TextBlock Text="{Binding CurrentUserText}" Foreground="#ffffff" FontWeight="Bold" FontSize="11" TextTrimming="CharacterEllipsis" />
+                  <TextBlock Text="{Binding ProviderMode}" Foreground="#64748b" FontSize="11" />
+                  <Border Background="#0B3A75" CornerRadius="4" Padding="6,2" HorizontalAlignment="Left" Margin="0,4,0,0" IsVisible="{Binding IsOfflineMode}">
+                    <TextBlock Text="Çevrim dışı" Foreground="#BFDBFE" FontSize="10" FontWeight="Bold" />
+                  </Border>
+                </StackPanel>
+                <Button Grid.Column="2" Command="{Binding LogoutCommand}" Padding="6" Background="Transparent" ToolTip.Tip="Çıkış yap">
+                  <PathIcon Data="M 10 17 v -2 h 4 V 9 h -4 V 7 l -5 5 l 5 5 z M 12 3 h 7 c 1.1 0 2 0.9 2 2 v 14 c 0 1.1 -0.9 2 -2 2 h -7 v -2 h 7 V 5 h -7 V 3 z" Width="18" Height="18" Foreground="#fca5a5" />
+                </Button>
+                <!-- Settings Gear Button -->
+                <Button Grid.Column="3" Command="{Binding OpenSettingsCommand}" Padding="6" Background="Transparent">
+                  <PathIcon Data="M 19.14 12.94 c 0.04 -0.3 0.06 -0.61 0.06 -0.94 c 0 -0.32 -0.02 -0.64 -0.07 -0.94 l 2.03 -1.58 c 0.18 -0.14 0.23 -0.41 0.12 -0.61 l -1.92 -3.32 c -0.12 -0.22 -0.37 -0.29 -0.59 -0.22 l -2.39 0.96 c -0.5 -0.38 -1.03 -0.7 -1.62 -0.94 l -0.36 -2.54 c -0.04 -0.24 -0.24 -0.41 -0.48 -0.41 h -3.84 c -0.24 0 -0.43 0.17 -0.47 0.41 l -0.36 2.54 c -0.59 0.24 -1.13 0.57 -1.62 0.94 l -2.39 -0.96 c -0.22 -0.08 -0.47 0 -0.59 0.22 L 2.74 8.87 c -0.12 0.21 -0.08 0.47 0.12 0.61 l 2.03 1.58 c -0.05 0.3 -0.09 0.63 -0.09 0.94 s 0.02 0.64 0.07 0.94 l -2.03 1.58 c -0.18 0.14 -0.23 0.41 -0.12 0.61 l 1.92 3.32 c 0.12 0.22 0.37 0.29 0.59 0.22 l 2.39 -0.96 c 0.5 0.38 1.03 0.7 1.62 0.94 l 0.36 2.54 c 0.05 0.24 0.24 0.41 0.48 0.41 h 3.84 c 0.24 0 0.44 -0.17 0.47 -0.41 l 0.36 -2.54 c 0.59 -0.24 1.13 -0.56 1.62 -0.94 l 2.39 0.96 c 0.22 0.08 0.47 0 0.59 -0.22 l 1.92 -3.32 c 0.12 -0.22 0.07 -0.47 -0.12 -0.61 l -2.01 -1.58 z M 12 15.6 c -1.98 0 -3.6 -1.62 -3.6 -3.6 s 1.62 -3.6 3.6 -3.6 s 3.6 1.62 3.6 3.6 s -1.62 3.6 -3.6 3.6 z" Width="18" Height="18" Foreground="#8ea8bc" />
+                </Button>
+              </Grid>
+              <!-- When collapsed -->
+              <StackPanel Spacing="10" HorizontalAlignment="Center" IsVisible="{Binding IsSidebarCollapsed}">
+                <Border Width="36" Height="36" CornerRadius="18" Background="#1d4ed8" HorizontalAlignment="Center">
+                  <TextBlock Text="VA" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="12" FontWeight="Bold" />
+                </Border>
+                <Button Command="{Binding OpenSettingsCommand}" Padding="6" Background="Transparent" HorizontalAlignment="Center">
+                  <PathIcon Data="M 19.14 12.94 c 0.04 -0.3 0.06 -0.61 0.06 -0.94 c 0 -0.32 -0.02 -0.64 -0.07 -0.94 l 2.03 -1.58 c 0.18 -0.14 0.23 -0.41 0.12 -0.61 l -1.92 -3.32 c -0.12 -0.22 -0.37 -0.29 -0.59 -0.22 l -2.39 0.96 c -0.5 -0.38 -1.03 -0.7 -1.62 -0.94 l -0.36 -2.54 c -0.04 -0.24 -0.24 -0.41 -0.48 -0.41 h -3.84 c -0.24 0 -0.43 0.17 -0.47 0.41 l -0.36 2.54 c -0.59 0.24 -1.13 0.57 -1.62 0.94 l -2.39 -0.96 c -0.22 -0.08 -0.47 0 -0.59 0.22 L 2.74 8.87 c -0.12 0.21 -0.08 0.47 0.12 0.61 l 2.03 1.58 c -0.05 0.3 -0.09 0.63 -0.09 0.94 s 0.02 0.64 0.07 0.94 l -2.03 1.58 c -0.18 0.14 -0.23 0.41 -0.12 0.61 l 1.92 3.32 c 0.12 0.22 0.37 0.29 0.59 0.22 l 2.39 -0.96 c 0.5 0.38 1.03 0.7 1.62 0.94 l 0.36 2.54 c 0.05 0.24 0.24 0.41 0.48 0.41 h 3.84 c 0.24 0 0.44 -0.17 0.47 -0.41 l 0.36 -2.54 c 0.59 -0.24 1.13 -0.56 1.62 -0.94 l 2.39 0.96 c 0.22 0.08 0.47 0 0.59 -0.22 l 1.92 -3.32 c 0.12 -0.22 0.07 -0.47 -0.12 -0.61 l -2.01 -1.58 z M 12 15.6 c -1.98 0 -3.6 -1.62 -3.6 -3.6 s 1.62 -3.6 3.6 -3.6 s 3.6 1.62 3.6 3.6 s -1.62 3.6 -3.6 3.6 z" Width="18" Height="18" Foreground="#8ea8bc" />
+                </Button>
+              </StackPanel>
+            </Grid>
+          </Border>
+
+        </Grid>
+      </Border>
+
+      <!-- COLUMN 1: Middle Chat Panel -->
+      <Grid Grid.Column="1" RowDefinitions="Auto, *, Auto, Auto" Background="#090f1b" Margin="1,0,0,0" ClipToBounds="True">
+
+        <!-- Header Bar -->
+        <Border Grid.Row="0" BorderBrush="#111c30" BorderThickness="0,0,0,1" Padding="16, 14">
+          <DockPanel LastChildFill="False">
+            <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+              <!-- Vortex logo removed from header to prevent double logo with sidebar -->
+              <TextBlock Text="VORTEX YAPAY ZEKA ASİSTANI" Foreground="#ffffff" FontWeight="Bold" FontSize="14" VerticalAlignment="Center" />
+              <Border Background="#1e293b" CornerRadius="15" Padding="12,4" Margin="10,0,0,0">
+                <TextBlock Text="{Binding ActiveModel}" Foreground="#94a3b8" FontSize="12" />
+              </Border>
+              <Border Background="#1e293b" CornerRadius="15" Padding="12,4">
+                <TextBlock Text="{Binding CurrentUserText}" Foreground="#94a3b8" FontSize="12" />
+              </Border>
+            </StackPanel>
+          </DockPanel>
+        </Border>
+
+        <!-- Chat Area with Messages -->
+        <ScrollViewer x:Name="MessageScrollViewer" Grid.Row="1" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" ClipToBounds="True">
+          <ItemsControl ItemsSource="{Binding Messages}" Width="{Binding $parent[ScrollViewer].Viewport.Width}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate>
+                <Grid Margin="20,4,44,16" RowDefinitions="Auto, Auto" HorizontalAlignment="Stretch">
+                  <!-- User or Assistant Label and Header -->
+                  <Grid Grid.Row="0" ColumnDefinitions="Auto, *, Auto" Margin="0,0,0,4">
+                    <!-- Icon or Avatar placeholder -->
+                    <Border Grid.Column="0" Width="20" Height="20" CornerRadius="10" Background="#1e293b" Margin="0,0,8,0">
+                      <PathIcon Data="M 12 2 C 6.48 2 2 6.48 2 12 s 4.48 10 10 10 s 10 -4.48 10 -10 S 17.52 2 12 2 z m -1 17.93 c -3.95 -0.49 -7 -3.85 -7 -7.93 c 0 -0.62 0.08 -1.21 0.21 -1.79 L 9 15 v 1 c 0 1.1 0.9 2 2 2 v 1.93 z m 6.9 -2.54 c -0.26 -0.81 -1 -1.39 -1.9 -1.39 h -1 v -3 c 0 -0.55 -0.45 -1 -1 -1 H 8 v -2 h 2 c 0.55 0 1 -0.45 1 -1 V 7 h 2 c 1.1 0 2 -0.9 2 -2 v -0.41 c 2.93 1.19 5 4.06 5 7.41 c 0 2.08 -0.8 3.97 -2.1 5.39 z" Width="10" Height="10" Foreground="{Binding AccentBrush}" />
+                    </Border>
+                    <TextBlock Grid.Column="1" Text="{Binding DisplayRole}" Foreground="#ffffff" FontWeight="Bold" FontSize="12" VerticalAlignment="Center" />
+                    <TextBlock Grid.Column="2" Text="14:32" Foreground="#475569" FontSize="10" VerticalAlignment="Center" />
+                  </Grid>
+
+                  <!-- Chat Bubble Content: Sade ChatGPT/Claude Desktop style card -->
+                  <Border Grid.Row="1" Background="{Binding BubbleBrush}" CornerRadius="6" Padding="12" BorderBrush="#142137" BorderThickness="1" HorizontalAlignment="Stretch">
+                    <StackPanel Spacing="6">
+                      <TextBlock Text="{Binding DisplayContent}" IsVisible="{Binding DisplayContent, Converter={x:Static conv:StringConverters.IsNotNullOrEmpty}}" TextWrapping="Wrap" Foreground="#f1f5f9" FontSize="13" LineHeight="19" />
+                      <ItemsControl ItemsSource="{Binding CodeBlocks}">
+                        <ItemsControl.ItemTemplate>
+                          <DataTemplate>
+                            <Border Background="#07101F" BorderBrush="#334155" BorderThickness="1" CornerRadius="6" Padding="0" Margin="0,4,0,0">
+                              <StackPanel Spacing="5">
+                                <Border Background="#0B1730" Padding="8,6">
+                                  <Grid ColumnDefinitions="*,Auto">
+                                    <TextBlock Text="{Binding Label}" Foreground="#93C5FD" FontSize="11" FontWeight="SemiBold" VerticalAlignment="Center" />
+                                    <Button Grid.Column="1" Padding="6,3" MinWidth="78" HorizontalAlignment="Right" Command="{Binding $parent[Window].DataContext.CopyMessageCommand}" CommandParameter="{Binding Content}" ToolTip.Tip="Bu komutu/kodu kopyala">
+                                      <StackPanel Orientation="Horizontal" Spacing="4">
+                                        <PathIcon Data="M 16 1 H 4 c -1.1 0 -2 .9 -2 2 v 14 h 2 V 3 h 12 V 1 z m 3 4 H 8 c -1.1 0 -2 .9 -2 2 v 14 c 0 1.1 .9 2 2 2 h 11 c 1.1 0 2 -.9 2 -2 V 7 c 0 -1.1 -.9 -2 -2 -2 z m 0 16 H 8 V 7 h 11 v 14 z" Width="12" Height="12" Foreground="#93C5FD" />
+                                        <TextBlock Text="Kopyala" Foreground="#BFDBFE" FontSize="11" VerticalAlignment="Center" />
+                                      </StackPanel>
+                                    </Button>
+                                  </Grid>
+                                </Border>
+                                <TextBlock Text="{Binding Content}" TextWrapping="Wrap" FontFamily="Cascadia Mono,Consolas,monospace" Foreground="#E2E8F0" FontSize="12" Margin="8,2,8,8" />
+                              </StackPanel>
+                            </Border>
+                          </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                      </ItemsControl>
+                      <StackPanel IsVisible="{Binding HasLocalAgentOffer}" Spacing="6" Margin="0,2,0,0">
+                        <TextBlock Text="{Binding LocalAgentOfferText}" Foreground="#F8FAFC" FontSize="12" TextWrapping="Wrap" />
+                        <TextBlock Text="{Binding LocalAgentOfferRiskText}" Foreground="#FCA5A5" FontSize="11" TextWrapping="Wrap" />
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+                          <Button Content="İzin ver" Command="{Binding $parent[Window].DataContext.ApproveAssistantLocalAgentOfferCommand}" CommandParameter="{Binding}" Background="#1D4ED8" Foreground="White" Padding="12,7" CornerRadius="8" />
+                        </StackPanel>
+                      </StackPanel>
+                      <Button HorizontalAlignment="Right" Padding="4" Margin="0,2,2,0" Command="{Binding $parent[Window].DataContext.CopyMessageCommand}" CommandParameter="{Binding Content}" ToolTip.Tip="Mesajı kopyala">
+                        <PathIcon Data="M 16 1 H 4 c -1.1 0 -2 .9 -2 2 v 14 h 2 V 3 h 12 V 1 z m 3 4 H 8 c -1.1 0 -2 .9 -2 2 v 14 c 0 1.1 .9 2 2 2 h 11 c 1.1 0 2 -.9 2 -2 V 7 c 0 -1.1 -.9 -2 -2 -2 z m 0 16 H 8 V 7 h 11 v 14 z" Width="12" Height="12" Foreground="#64748B" />
+                      </Button>
+                    </StackPanel>
+                  </Border>
+                </Grid>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </ScrollViewer>
+
+        <!-- Message Input Area -->
+        <StackPanel Grid.Row="2" Margin="20,0,20,16" Spacing="10">
+          <Border IsVisible="{Binding IsLocalAgentApprovalCardVisible}" Background="#071A33" BorderBrush="#0B3A75" BorderThickness="1" CornerRadius="14" Padding="14">
+            <StackPanel Spacing="8">
+              <TextBlock Text="{Binding LocalAgentApprovalTitle}" FontSize="16" FontWeight="Bold" Foreground="#BFDBFE" />
+              <TextBlock Text="{Binding LocalAgentApprovalText}" TextWrapping="Wrap" Foreground="#E2E8F0" FontSize="12" MaxHeight="150" />
+              <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+                <Button Content="Reddet" Command="{Binding RejectLocalAgentActionCommand}" Background="#0B3A75" Foreground="#FCA5A5" Padding="14,8" CornerRadius="8" />
+                <Button Content="Onayla ve Çalıştır" Command="{Binding ApproveLocalAgentActionCommand}" Background="#1D4ED8" Foreground="White" FontWeight="Bold" Padding="14,8" CornerRadius="8" />
+              </StackPanel>
+            </StackPanel>
+          </Border>
+          <Border Background="#0b1322" CornerRadius="12" BorderBrush="#1e2c4c" BorderThickness="1" Padding="8">
+            <Grid RowDefinitions="*, Auto">
+            <TextBox Grid.Row="0" Text="{Binding InputText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" PlaceholderText="Mesajınızı yazın..." AcceptsReturn="True" MinHeight="50" MaxHeight="100" Background="Transparent" BorderThickness="0" Padding="4" VerticalAlignment="Stretch" Foreground="#ffffff" CaretBrush="#ffffff" />
+            <Grid Grid.Row="1" ColumnDefinitions="Auto, Auto, Auto, *, Auto, Auto" Margin="0,4,0,0">
+              <!-- Left utility icons -->
+              <Button Grid.Column="0" ToolTip.Tip="Dosya Ekle" Padding="6">
+                <PathIcon Data="M 16.5 6 v 11.5 c 0 2.21 -1.79 4 -4 4 s -4 -1.79 -4 -4 V 5 c 0 -3.31 2.69 -6 6 -6 s 6 2.69 6 6 v 10 c 0 1.1 -0.9 2 -2 2 s -2 -0.9 -2 -2 V 6 h -1.5 v 9 c 0 1.93 1.57 3.5 3.5 3.5 s 3.5 -1.57 3.5 -3.5 V 5 c 0 -4.14 -3.36 -7.5 -7.5 -7.5 S 3 4.86 3 9 v 8.5 c 0 3.04 2.46 5.5 5.5 5.5 s 5.5 -2.46 5.5 -5.5 V 6 h -1.5 z" Width="15" Height="15" Foreground="#8ea8bc" />
+              </Button>
+              <Button Grid.Column="1" ToolTip.Tip="Kod Ekle" Padding="6">
+                <PathIcon Data="M 9.4 16.6 L 4.8 12 l 4.6 -4.6 L 8 6 l -6 6 6 6 1.4 -1.4 z m 5.2 0 l 4.6 -4.6 l -4.6 -4.6 L 16 6 l 6 6 l -6 6 l -1.4 -1.4 z" Width="15" Height="15" Foreground="#8ea8bc" />
+              </Button>
+              <Button Grid.Column="2" ToolTip.Tip="İnternette Ara" Padding="6">
+                <PathIcon Data="M 12 2 C 6.48 2 2 6.48 2 12 s 4.48 10 10 10 s 10 -4.48 10 -10 S 17.52 2 12 2 z m -1 17.93 c -3.95 -0.49 -7 -3.85 -7 -7.93 c 0 -0.62 0.08 -1.21 0.21 -1.79 L 9 15 v 1 c 0 1.1 0.9 2 2 2 v 1.93 z m 6.9 -2.54 c -0.26 -0.81 -1 -1.39 -1.9 -1.39 h -1 v -3 c 0 -0.55 -0.45 -1 -1 -1 H 8 v -2 h 2 c 0.55 0 1 -0.45 1 -1 V 7 h 2 c 1.1 0 2 -0.9 2 -2 v -0.41 c 2.93 1.19 5 4.06 5 7.41 c 0 2.08 -0.8 3.97 -2.1 5.39 z" Width="15" Height="15" Foreground="#38bdf8" />
+              </Button>
+
+              <!-- Right action buttons -->
+              <Button Grid.Column="4" Command="{Binding PushToTalkCommand}" ToolTip.Tip="{Binding MicButtonText}" Padding="8" Background="#111c30" CornerRadius="18" Width="34" Height="34" Margin="0,0,6,0">
+                <PathIcon Data="M 12 14 c 1.66 0 3 -1.34 3 -3 V 5 c 0 -1.66 -1.34 -3 -3 -3 S 9 3.34 9 5 v 6 c 0 1.66 1.34 3 3 3 z m 5.3 -3 c 0 3 -2.54 5.1 -5.3 5.1 S 6.7 14 6.7 11 H 5 c 0 3.41 2.72 6.23 6 6.72 V 21 h 2 v -3.28 c 3.28 -0.48 6 -3.3 6 -6.72 h -1.7 z" Width="15" Height="15" Foreground="#38bdf8" />
+              </Button>
+              <Button Grid.Column="5" Command="{Binding SendCommand}" ToolTip.Tip="Gönder" Padding="8" Background="#1d4ed8" CornerRadius="18" Width="34" Height="34">
+                <PathIcon Data="M 2.01 21 L 23 12 L 2.01 3 L 2 10 l 15 2 l -15 2 z" Width="15" Height="15" Foreground="#ffffff" />
+              </Button>
+            </Grid>
+            </Grid>
+          </Border>
+        </StackPanel>
+
+        <!-- Bottom-most status bar -->
+        <Border Grid.Row="3" Background="#060b13" BorderBrush="#111c30" BorderThickness="0,1,0,0" Padding="16,8">
+          <DockPanel>
+            <StackPanel Orientation="Horizontal" Spacing="20">
+              <StackPanel Orientation="Horizontal" Spacing="6">
+                <!-- Blue/cyan globe icon for internet provider as requested -->
+                <PathIcon Data="M 12 2 C 6.48 2 2 6.48 2 12 s 4.48 10 10 10 s 10 -4.48 10 -10 S 17.52 2 12 2 z m -1 17.93 c -3.95 -0.49 -7 -3.85 -7 -7.93 c 0 -0.62 0.08 -1.21 0.21 -1.79 L 9 15 v 1 c 0 1.1 0.9 2 2 2 v 1.93 z m 6.9 -2.54 c -0.26 -0.81 -1 -1.39 -1.9 -1.39 h -1 v -3 c 0 -0.55 -0.45 -1 -1 -1 H 8 v -2 h 2 c 0.55 0 1 -0.45 1 -1 V 7 h 2 c 1.1 0 2 -0.9 2 -2 v -0.41 c 2.93 1.19 5 4.06 5 7.41 c 0 2.08 -0.8 3.97 -2.1 5.39 z" Width="10" Height="10" Foreground="#38bdf8" VerticalAlignment="Center" />
+                <TextBlock Text="Provider: Cloud" Foreground="#8ea8bc" FontSize="11" />
+              </StackPanel>
+              <StackPanel Orientation="Horizontal" Spacing="6">
+                <PathIcon Data="M 18 8 h -1 V 6 c 0 -2.76 -2.24 -5 -5 -5 S 7 3.24 7 6 v 2 H 6 c -1.1 0 -2 .9 -2 2 v 10 c 0 1.1 .9 2 2 2 h 12 c 1.1 0 2 -.9 2 -2 V 10 c 0 -1.1 -.9 -2 -2 -2 z m -6 9 c -1.1 0 -2 -.9 -2 -2 s .9 -2 2 -2 2 .9 2 2 -.9 2 -2 2 z m 3.1 -9 H 8.9 V 6 c 0 -1.71 1.39 -3.1 3.1 -3.1 1.71 0 3.1 1.39 3.1 3.1 v 2 z" Width="10" Height="10" Foreground="#8ea8bc" VerticalAlignment="Center" />
+                <TextBlock Text="Agent Hakkınız: 5" Foreground="#8ea8bc" FontSize="11" />
+              </StackPanel>
+              <StackPanel Orientation="Horizontal" Spacing="6">
+                <PathIcon Data="M 9 16.17 L 4.83 12 l -1.42 1.41 L 9 19 21 7 l -1.41 -1.41 z" Width="10" Height="10" Foreground="#8ea8bc" VerticalAlignment="Center" />
+                <TextBlock Text="Durum: Hazır" Foreground="#8ea8bc" FontSize="11" />
+              </StackPanel>
+            </StackPanel>
+            <TextBlock DockPanel.Dock="Right" Text="Vortex Core v1.0" Foreground="#475569" FontSize="11" />
+          </DockPanel>
+        </Border>
+
+      </Grid>
+
+      <!-- COLUMN 2: Right Visual Panel (Mascot & Control) -->
+      <Border x:Name="RightPanel" Grid.Column="2" Background="#050811" Padding="0" Margin="0" ClipToBounds="True">
+        <Grid x:Name="RightPanelLayout" RowDefinitions="Auto, *, Auto, Auto, Auto" Background="#050811">
+
+          <!-- Asistan (Orb view): orta alanı doldurur, üst ve alt kontroller görünür kalır. -->
+          <Grid Grid.Row="1" IsVisible="{Binding IsAssistantTabSelected}" ClipToBounds="True" Margin="0,10,0,10">
+            <Border x:Name="OrbHost" IsVisible="{Binding IsMascotVisible}" Background="#050811" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0" />
+            <StackPanel IsVisible="{Binding IsMascotVisible, Converter={x:Static conv:BoolConverters.Not}}" VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="10">
+              <PathIcon Data="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.82l2.92 2.92c1.51-1.26 2.7-2.89 3.44-4.74-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 2.2 0 4.27-.61 6.04-1.66l.46.46L20.23 20 21.5 18.73 3.27 3 2 4.27zM12 17c-2.76 0-5-2.24-5-5 0-.77.18-1.5.49-2.14l1.57 1.57c-.03.18-.06.37-.06.57 0 1.66 1.34 3 3 3 .2 0 .39-.03.57-.06l1.57 1.57c-.64.31-1.37.49-2.14.49zm.93-7.57l1.64 1.64c.27-.57.43-1.21.43-1.89 0-2.21-1.79-4-4-4-.68 0-1.32.16-1.89.43l1.64 1.64c.08-.03.16-.07.25-.07.66 0 1.2 0 1.2 1.2 0 .09-.04.17-.07.25z" Width="36" Height="36" Foreground="#475569" />
+              <TextBlock Text="Vortex Yapay Zeka Asistanı gizlendi." Foreground="#64748b" FontSize="13" FontWeight="Bold" HorizontalAlignment="Center" />
+            </StackPanel>
+          </Grid>
+
+          <!-- Segmented Tab Control -->
+          <Border Grid.Row="0" Background="#090f1b" CornerRadius="10" Padding="4" Margin="16,16,16,0">
+            <Grid ColumnDefinitions="*, *, *, Auto">
+              <!-- Asistan Tab selection -->
+              <Button Grid.Column="0" Command="{Binding ShowAsistanTabCommand}" Background="{Binding AsistanTabBackground}" CornerRadius="8" Padding="10,8" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center">
+                <TextBlock Text="Asistan" Foreground="{Binding AsistanTabForeground}" FontSize="13" FontWeight="Bold" />
+              </Button>
+              <!-- Görevler Tab selection -->
+              <Button Grid.Column="1" Command="{Binding ShowTasksTabCommand}" Background="{Binding TasksTabBackground}" CornerRadius="8" Padding="10,8" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center">
+                <TextBlock Text="Görevler" Foreground="{Binding TasksTabForeground}" FontSize="13" />
+              </Button>
+              <Button Grid.Column="2" Command="{Binding ShowCreditsTabCommand}" Background="{Binding CreditsTabBackground}" CornerRadius="8" Padding="10,8" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center">
+                <TextBlock Text="Krediler" Foreground="{Binding CreditsTabForeground}" FontSize="13" />
+              </Button>
+              <Button Grid.Column="3" Command="{Binding ToggleMascotCommand}" Padding="8" Margin="4,0,0,0" ToolTip.Tip="Maskotu Gizle/Göster">
+                <PathIcon Data="{Binding MascotVisibilityIcon}" Width="16" Height="16" Foreground="#38bdf8" />
+              </Button>
+            </Grid>
+          </Border>
+
+          <!-- Görevler list view tab content -->
+          <Grid Grid.Row="1" IsVisible="{Binding IsTasksTabSelected}" Margin="16,16,16,0">
+            <DockPanel>
+              <Border DockPanel.Dock="Top" IsVisible="{Binding IsLocalAgentApprovalCardVisible}" Background="#071A33" BorderBrush="#0B3A75" BorderThickness="1" CornerRadius="12" Padding="12" Margin="0,0,0,12">
+                <StackPanel Spacing="7">
+                  <TextBlock Text="{Binding LocalAgentApprovalTitle}" FontSize="14" FontWeight="Bold" Foreground="#BFDBFE" />
+                  <TextBlock Text="{Binding LocalAgentApprovalText}" TextWrapping="Wrap" Foreground="#E2E8F0" FontSize="11" MaxHeight="120" />
+                  <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+                    <Button Content="Reddet" Command="{Binding RejectLocalAgentActionCommand}" Background="#0B3A75" Foreground="#FCA5A5" Padding="10,6" CornerRadius="7" />
+                    <Button Content="İzin ver ve çalıştır" Command="{Binding ApproveLocalAgentActionCommand}" Background="#1D4ED8" Foreground="White" FontWeight="Bold" Padding="10,6" CornerRadius="7" />
+                  </StackPanel>
+                </StackPanel>
+              </Border>
+              <!-- Empty state message if no events -->
+              <TextBlock DockPanel.Dock="Top" Text="Çalışan Görev Yok" Foreground="#64748b" FontSize="14" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,30,0,0" IsVisible="{Binding IsTimelineEmpty}" />
+              <TextBlock DockPanel.Dock="Top" Text="Henüz bir agent görevi veya otomasyon geçmişi bulunmuyor." Foreground="#475569" FontSize="12" TextAlignment="Center" TextWrapping="Wrap" Margin="10" IsVisible="{Binding IsTimelineEmpty}" />
+
+              <!-- Timeline/Jobs list -->
+              <ScrollViewer IsVisible="{Binding IsTimelineEmpty, Converter={x:Static conv:BoolConverters.Not}}">
+                <ItemsControl ItemsSource="{Binding Timeline}">
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                      <Border Background="#090f1b" BorderBrush="#111c30" BorderThickness="1" CornerRadius="8" Padding="10" Margin="0,0,0,8">
+                        <Grid RowDefinitions="Auto, Auto" ColumnDefinitions="*, Auto">
+                          <TextBlock Grid.Column="0" Grid.Row="0" Text="{Binding Detail}" Foreground="#ffffff" FontWeight="Bold" FontSize="12" TextTrimming="CharacterEllipsis" />
+                          <TextBlock Grid.Column="1" Grid.Row="0" Text="{Binding DisplayKind}" Foreground="{Binding AccentBrush}" FontSize="10" FontWeight="SemiBold" />
+                          <TextBlock Grid.Column="0" Grid.Row="1" Text="{Binding Timestamp}" Foreground="#475569" FontSize="10" Margin="0,4,0,0" />
+                          <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding DisplayKind}" Foreground="{Binding AccentBrush}" FontSize="10" Margin="0,4,0,0" />
+                        </Grid>
+                      </Border>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+              </ScrollViewer>
+            </DockPanel>
+          </Grid>
+
+          <Border Grid.Row="1" IsVisible="{Binding IsCreditsTabSelected}" Background="#090f1b" BorderBrush="#1d4ed8" BorderThickness="1" CornerRadius="12" Padding="18" Margin="16">
+            <StackPanel Spacing="10" VerticalAlignment="Center">
+              <TextBlock Text="Terra Kredileri" Foreground="#ffffff" FontWeight="Bold" FontSize="16" />
+              <TextBlock Text="Kredi bilgisi yükleniyor." Foreground="#bfdbfe" IsVisible="{Binding IsCreditStatusLoading}" />
+              <TextBlock Text="{Binding CreditStatusText}" Foreground="#fca5a5" TextWrapping="Wrap" IsVisible="{Binding IsCreditStatusUnavailable}" />
+              <TextBlock Text="{Binding CreditRemainingText}" Foreground="#ffffff" FontWeight="Bold" />
+              <ProgressBar Value="{Binding CreditProgressPercent}" Maximum="100" Foreground="#2563eb" Background="#172554" Height="10" ToolTip.Tip="Kalan Terra kredi yüzdesi" />
+              <TextBlock Text="{Binding CreditTokensText}" Foreground="#bfdbfe" />
+              <TextBlock Text="1 kredi = 17.400 token" Foreground="#bfdbfe" />
+              <TextBlock Text="{Binding CreditCountdownText}" Foreground="#bfdbfe" />
+            </StackPanel>
+          </Border>
+
+          <!-- Waveform Status Indicator Bubble ("Dinliyor") -->
+          <Border Grid.Row="2" Background="#0c192c" BorderBrush="#103254" BorderThickness="1" CornerRadius="12" Padding="14,10" HorizontalAlignment="Center" Margin="16,0,16,14" IsVisible="{Binding IsAssistantTabSelected}">
+            <Grid ColumnDefinitions="Auto, Auto">
+              <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                <Ellipse Width="6" Height="6" Fill="#00e5ff" VerticalAlignment="Center" />
+                <!-- Center State text display -->
+                <TextBlock Text="{Binding VoiceStatusText}" Foreground="#ffffff" FontWeight="Bold" FontSize="13" VerticalAlignment="Center" />
+              </StackPanel>
+              <!-- Wave Graphic visualizer simulator -->
+              <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="3" Margin="10,0,0,0" VerticalAlignment="Center" IsVisible="{Binding IsRecording}">
+                <Rectangle Width="2" Height="10" Fill="#00e5ff" RadiusX="1" RadiusY="1" />
+                <Rectangle Width="2" Height="16" Fill="#00e5ff" RadiusX="1" RadiusY="1" />
+                <Rectangle Width="2" Height="8" Fill="#00e5ff" RadiusX="1" RadiusY="1" />
+                <Rectangle Width="2" Height="12" Fill="#00e5ff" RadiusX="1" RadiusY="1" />
+                <Rectangle Width="2" Height="4" Fill="#00e5ff" RadiusX="1" RadiusY="1" />
+              </StackPanel>
+            </Grid>
+          </Border>
+
+          <!-- Action Buttons: Voice Mode & Yazılı Moda Geç -->
+          <Grid Grid.Row="3" ColumnDefinitions="*, *" Margin="16,0" IsVisible="{Binding IsAssistantTabSelected}">
+            <Button Grid.Column="0" Command="{Binding ToggleVoiceModeMicCommand}" Background="#0f1f38" BorderBrush="#1d4ed8" BorderThickness="1" CornerRadius="10" Padding="12,10" HorizontalAlignment="Stretch" Margin="0,0,5,0">
+              <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
+                <PathIcon Data="M 12 14 c 1.66 0 3 -1.34 3 -3 V 5 c 0 -1.66 -1.34 -3 -3 -3 S 9 3.34 9 5 v 6 c 0 1.66 1.34 3 3 3 z m 5.3 -3 c 0 3 -2.54 5.1 -5.3 5.1 S 6.7 14 6.7 11 H 5 c 0 3.41 2.72 6.23 6 6.72 V 21 h 2 v -3.28 c 3.28 -0.48 6 -3.3 6 -6.72 h -1.7 z" Width="14" Height="14" Foreground="#38bdf8" />
+                <TextBlock Text="{Binding VoiceModeActionText}" Foreground="#38bdf8" FontWeight="SemiBold" FontSize="12" VerticalAlignment="Center" />
+              </StackPanel>
+            </Button>
+            <Button Grid.Column="1" Command="{Binding ExitVoiceModeCommand}" Background="#090f1b" BorderBrush="#1e293b" BorderThickness="1" CornerRadius="10" Padding="12,10" HorizontalAlignment="Stretch" Margin="5,0,0,0">
+              <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
+                <PathIcon Data="M 19 3 H 5 c -1.1 0 -2 .9 -2 2 v 14 c 0 1.1 .9 2 2 2 h 14 c 1.1 0 2 -.9 2 -2 V 5 c 0 -1.1 -.9 -2 -2 -2 z m -5 14 H 7 v -2 h 7 v 2 z m 3 -4 H 7 v -2 h 10 v 2 z m 0 -4 H 7 V 7 h 10 v 2 z" Width="14" Height="14" Foreground="#64748b" />
+                <TextBlock Text="Yazılı Moda Geç" Foreground="#cbd5e1" FontSize="11" VerticalAlignment="Center" />
+              </StackPanel>
+            </Button>
+          </Grid>
+
+          <!-- Subtitle Prompt Description -->
+          <TextBlock Grid.Row="4" Text="Konuşmak için mikrofonunuzu kullanın" Foreground="#94A3B8" FontSize="12" TextAlignment="Center" Margin="16,12,16,16" IsVisible="{Binding IsAssistantTabSelected}" />
+
+        </Grid>
+      </Border>
+
+      <!-- Kokoro install prompt (offline TTS recommendation) -->
+      <Border Grid.Column="1" Grid.ColumnSpan="1" IsVisible="{Binding IsKokoroInstallPromptVisible}" IsHitTestVisible="{Binding IsKokoroInstallPromptVisible}" Background="#80050A14" ZIndex="100">
+        <Border Background="#071A33" BorderBrush="#0B3A75" BorderThickness="1" CornerRadius="14" Padding="16" MaxWidth="540" HorizontalAlignment="Center" VerticalAlignment="Center">
+          <StackPanel Spacing="10">
+            <TextBlock Text="Kokoro yerel TTS" FontSize="18" FontWeight="Bold" Foreground="#BFDBFE" />
+            <TextBlock Text="{Binding KokoroInstallPromptText}" TextWrapping="Wrap" Foreground="#E2E8F0" FontSize="13" />
+            <Border Background="#020617" BorderBrush="#1E3A5F" BorderThickness="1" CornerRadius="8" Padding="8" MaxHeight="160" IsVisible="{Binding KokoroInstallLog, Converter={x:Static conv:StringConverters.IsNotNullOrEmpty}}">
+              <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                <TextBlock Text="{Binding KokoroInstallLog}" TextWrapping="Wrap" FontFamily="Consolas,Courier New,monospace" FontSize="11" Foreground="#A5B4FC" />
+              </ScrollViewer>
+            </Border>
+            <StackPanel Spacing="8">
+              <Button Content="Kur / İndir" Command="{Binding InstallKokoroCommand}" Background="#1D4ED8" Foreground="White" FontWeight="Bold" Padding="12,8" CornerRadius="8" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"/>
+              <Button Content="Arka planda devam et" Command="{Binding DismissKokoroInstallPromptCommand}" Background="#0B3A75" Foreground="#BFDBFE" Padding="12,8" CornerRadius="8" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"/>
+              <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                <Button Grid.Column="0" Content="Belgeler" Command="{Binding OpenKokoroDocsCommand}" Background="Transparent" Foreground="#93C5FD" Padding="10,8" CornerRadius="8" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"/>
+                <Button Grid.Column="1" Content="Yapay zeka asistanına danış" Command="{Binding ConsultKokoroInstallFailureCommand}" IsVisible="{Binding IsKokoroInstallFailed}" Background="#0F766E" Foreground="#ECFDF5" Padding="12,8" CornerRadius="8" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" ToolTip.Tip="Kurulum başarısız olduğunda etkinleşir."/>
+              </Grid>
+            </StackPanel>
+          </StackPanel>
+        </Border>
+      </Border>
+
+    </Grid>
+  </Grid>
+</Window>
