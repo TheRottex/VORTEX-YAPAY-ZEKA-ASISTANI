@@ -1,34 +1,139 @@
-# Vortex Hermes Worker on WSL
+# Vortex Hermes Worker (WSL)
 
-> **Canonical operations guide:** Open [`README.html`](README.html) for the maintained Turkish command cookbook: correct shell selection, WSL/Docker/.NET preflight, systemd lifecycle, Worker publish, diagnostics, rollback, and portable-backup boundaries.
+## Overview
+- Worker mimarisi
+- Server ilişkisi
+- Hermes çalışma modeli
+- Güvenlik sınırları
 
-## Scope
+## Architecture
+- Desktop
+- Server
+- Worker
+- Docker
+- CLIProxy
+- Model Router
 
-This runbook describes the private WSL-hosted `Vortex.HermesWorker`. The public `Vortex.Server` queues and receives jobs; it never starts Hermes. The Worker connects outbound to the Server. Do not open an inbound laptop port for the Worker.
+## Directory Layout
+- releases/
+- current/
+- data/
+- secrets/
+- workspace/
+- artifacts/
 
-The canonical HTML guide is the only command catalog. This Markdown file intentionally stays short so lifecycle commands do not diverge between two documents.
+## Prerequisites
+- Windows
+- WSL2
+- Ubuntu
+- systemd
+- Docker Desktop
+- .NET 8
 
-## Non-negotiable boundary
+## Installation
 
-- Keep real environment files, Hermes seed files, provider/model keys, user workspaces, logs, databases, Docker volumes, container state, and credentials out of source and portable archives.
-- Keep `VORTEX_REQUIRE_PRIVATE_SERVER_ENDPOINT=false` while the Worker intentionally uses a public HTTPS Server origin. Only change it after a verified private transport is available.
-- Docker mode is one-shot and does not automatically fall back to process mode.
-- Do not infer the local CLIProxy endpoint from an old example. Confirm the configured listener and use the endpoint configured for the active Worker.
+### Windows PowerShell
 
-## Reference files
+...
 
-- [Secret-free Worker environment template](vortex-hermes-worker.env.example)
-- [Canonical private WSL operations guide](README.html)
-- [Worker versioned publish helper](../../Vortex.HermesWorker/publish-wsl-worker.sh)
-- [Worker user-service template](../../Vortex.HermesWorker/vortex-hermes-worker.service.example)
-- [Public Server operations guide](../../Vortex.Server/README.html)
+### Ubuntu / WSL
 
-## Acceptance boundary
+...
 
-A successful Docker image smoke test or `/health/worker` response is not a complete E2E result. Complete validation requires an owner-authenticated controlled job to transition:
+### Docker
 
-```text
-Queued → Claimed → Running → Completed
-```
+...
 
-and must preserve owner isolation (`404` for a different owner; `401` for an anonymous request).
+### .NET
+
+...
+
+## Worker Configuration
+
+- worker.env
+- environment variables
+- Worker ID
+- Worker Token
+- Data paths
+- CLIProxy
+
+## Docker Mode
+
+- docker build
+- docker load
+- docker run
+- image inspect
+
+## Native Mode
+
+- publish
+- dotnet
+- current symlink
+
+## systemd Service
+
+- install
+- enable
+- start
+- stop
+- restart
+- status
+- logs
+
+## Health Checks
+
+- Worker
+- Docker
+- Server
+- Hermes
+
+## Diagnostics
+
+- Docker not found
+- Wrong image
+- CLIProxy
+- IPv4
+- IPv6
+- Seed
+- Permission
+- systemd
+- current symlink
+
+## Rollback
+
+...
+
+## Portable Backup
+
+...
+
+## Restore
+
+...
+
+## Security
+
+...
+
+## Troubleshooting Matrix
+
+| Problem | Cause | Fix |
+
+...
+
+## E2E Validation
+
+Queued
+↓
+Claimed
+↓
+Running
+↓
+Completed
+
+## Related Documents
+
+README.html
+RESTORE.md
+vortex-hermes-worker.env.example
+publish-wsl-worker.sh
