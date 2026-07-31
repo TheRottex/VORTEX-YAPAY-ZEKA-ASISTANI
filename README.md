@@ -35,7 +35,7 @@ VORTEX; farklı sorumlulukları ortak hedefte buluşturan genç bir yazılım ta
 
 Takımın temel değerleri ekip çalışması, azim, disiplin ve asla pes etmemedir. Üyeler; C#, .NET, Python ve Java gibi teknolojilerle çalışırken güvenli kullanıcı deneyimi, estetik tasarım ve yüksek performans hedeflerini birlikte gözetir.
 
-Ayrıntılı ekip hikâyesi, projeler, roller ve TEKNOFEST bağlamı için [TEKNOFEST Takım Belgesi](docs/TEKNOFESTTEAM.md) dosyasını inceleyin.
+Ayrıntılı ekip hikâyesi, projeler, roller ve TEKNOFEST bağlamı için [TEKNOFEST Takım Belgesi](docs/TEAM.md) dosyasını inceleyin.
 
 ## Katkılarıyla
 
