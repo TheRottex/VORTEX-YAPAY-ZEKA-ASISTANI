@@ -25,6 +25,8 @@
 <main>
 <section id="before" class="phase"><div class="phase-head"><div class="num">!</div><div><div class="eyebrow">Başlamadan</div><h2>Gizli değerleri arşive koyma.</h2></div></div>
 <div class="danger note"><strong>Kural:</strong> Gerçek <code>VORTEX_WORKER_TOKEN</code>, <code>OPENAI_API_KEY</code>, CLIProxy anahtarı, <code>worker.env</code>, <code>hermes.env</code>, <code>hermes-config.yaml</code>, <code>data/</code>, kullanıcı workspace'i, log ve database taşıma paketine girmez. Yeni laptopta secret'lar güvenli kanaldan yeniden yazılır.</div>
+<h3>Hızlı yol: yeni laptopta ne gerekir?</h3>
+<ol class="steps"><li><strong>Bu kit:</strong> Worker/Shared source, secret-free template, HTML rehber ve doğrulama listesi.</li><li><strong>Ayrı güvenli kanal:</strong> gerçek Server endpoint'i, Worker tokenı, provider/CLIProxy anahtarı ve Hermes seed dosyaları.</li><li><strong>Docker seçimi:</strong> secret-free Docker build context varsa yeni laptopta image build et; yoksa güvenilen ayrı image TAR dosyasını elle al, hash doğrula, <code>docker load</code> ile yükle.</li><li><strong>Başarı tanımı:</strong> yalnız health endpoint true olması yeterli değil. Son kontrollü mesajın <code>Queued → Claimed → Running → Completed</code> zincirini bitirdiğini gör.</li></ol>
 <p>Bu rehber yalnız private worker paketi içindir. Public GitHub release içine Worker source, WSL runtime, secret, Docker state veya kullanıcı verisi koyma.</p>
 </section>
 
@@ -98,12 +100,20 @@ sha256sum vortex-worker-kit.zip &gt; vortex-worker-kit.zip.sha256</pre>
 </section>
 
 <section id="phase2" class="phase"><div class="phase-head"><div class="num">2</div><div><div class="eyebrow">Yeni laptop</div><h2>Sıfırdan WSL, Docker, Hermes testleri.</h2></div></div>
-<h3>2.1 Windows: WSL2 ve Ubuntu</h3>
+<h3>2.1 Windows: WSL2, Ubuntu ve systemd</h3>
 <pre># Yönetici PowerShell
 wsl --install -d Ubuntu
 wsl --update
 wsl --status</pre>
-<p>Windows yeniden başlatma isterse tamamla. Ubuntu ilk açılışında Linux kullanıcı adı/parola oluştur.</p>
+<p>Windows yeniden başlatma isterse tamamla. Ubuntu ilk açılışında Linux kullanıcı adı/parola oluştur. Ubuntu terminalinde systemd aç:</p>
+<pre>sudo tee /etc/wsl.conf &gt;/dev/null &lt;&lt;'EOF'
+[boot]
+systemd=true
+EOF
+exit</pre>
+<p>Sonra Windows PowerShell'de <code>wsl --shutdown</code> çalıştır, Ubuntu'yu yeniden aç ve doğrula:</p>
+<pre>systemctl --version
+systemctl --user is-system-running || true</pre>
 <h3>2.2 Docker Desktop</h3>
 <ol class="steps"><li>Docker Desktop'ı resmi Docker kaynağından kur.</li><li>Settings → Resources → WSL Integration altında Ubuntu dağıtımını etkinleştir.</li><li>WSL terminalinde doğrula:</li></ol>
 <pre>docker version
@@ -113,6 +123,7 @@ docker run --rm hello-world</pre>
 sudo apt install -y dotnet-sdk-8.0 git zip curl ca-certificates
 
 dotnet --info</pre>
+<div class="warn note"><strong><code>dotnet-sdk-8.0</code> bulunamazsa:</strong> Microsoft .NET Debian/Ubuntu package feed'ini işletim sistemi sürümüne uygun biçimde ekle, sonra aynı <code>apt install</code> komutunu tekrar çalıştır. Private URL, token veya kurum içi NuGet credential'ını bu rehbere yazma.</div>
 <h3>2.4 Worker kit aç ve publish et</h3>
 <pre>mkdir -p "$HOME/vortex-worker"
 cd "$HOME/vortex-worker"
@@ -126,15 +137,19 @@ dotnet publish Vortex.HermesWorker/Vortex.HermesWorker.csproj \
 ln -sfn "$(readlink -f "$HOME/vortex-worker/releases/$(ls -1 "$HOME/vortex-worker/releases" | tail -n1)")" "$HOME/vortex-worker/current"</pre>
 <div class="note">Daha güvenli alternatif: publish dizin adını önce değişkene al, sonra <code>ln -sfn</code> ile <code>current</code> linkini o release'e yönlendir. Bu link service'in çalıştırdığı sürümdür.</div>
 <h3>2.5 Docker image yükle veya build et</h3>
-<pre># Image archive taşıdıysan:
-docker load -i "$HOME/vortex-worker/vortex-worker-kit/image/vortex-hermes-0.18.2.tar"
+<p>İki yol vardır. Yalnız biri seçilir. Docker build context kit içinde yoksa ikinci komutu deneme; güvenilen image TAR'ı ayrı güvenli kanaldan edin.</p>
+<pre># Image TAR taşıdıysan önce checksum doğrula:
+cd "$HOME/vortex-worker/vortex-worker-kit/image"
+sha256sum -c vortex-hermes-&lt;SURUM&gt;.tar.sha256
+docker load -i vortex-hermes-&lt;SURUM&gt;.tar
 
-# Archive yoksa source içinden build et:
+# Secret-free Docker build context kit içindeyse:
 cd "$HOME/vortex-worker/source"
-docker build -t vortex-hermes:0.18.2 -f docker/hermes/Dockerfile .
+docker build -t vortex-hermes:&lt;SURUM&gt; -f docker/hermes/Dockerfile .
 
-docker image inspect vortex-hermes:0.18.2 >/dev/null && echo IMAGE_OK
-docker run --rm vortex-hermes:0.18.2 --help</pre>
+docker image inspect vortex-hermes:&lt;SURUM&gt; >/dev/null && echo IMAGE_OK
+docker run --rm vortex-hermes:&lt;SURUM&gt; --help</pre>
+<div class="note"><strong>Ayırım:</strong> source archive C# Worker kodudur. Image TAR, Hermes container image'idir. Final kit archive ise bunları taşıyan paket olabilir. Image TAR yoksa source'dan image build etmek için Dockerfile ve build context ayrıca gerekir.</div>
 <h3>2.6 CLIProxy erişimi ve Hermes one-shot</h3>
 <p>Worker Docker container içinden WSL-local CLIProxy'ye <code>host.docker.internal</code> üzerinden ulaşır. CLIProxy önce kendi laptopunda hazır olmalı; public LAN portu açma.</p>
 <pre># CLIProxy portunu kendi kurulumuna göre değiştir.
@@ -178,10 +193,13 @@ HERMES_ENV_SEED_PATH=/home/&lt;LINUX_KULLANICISI&gt;/vortex-worker/secrets/herme
 VORTEX_DOCKER_MEMORY_LIMIT_MB=512
 VORTEX_DOCKER_MEMORY_SWAP_LIMIT_MB=512
 VORTEX_DOCKER_PIDS_LIMIT=128
+VORTEX_DOCKER_CPU_LIMIT=&lt;POZITIF_CPU_SINIRI_ORNEK_0.5&gt;
 VORTEX_REQUIRE_PRIVATE_SERVER_ENDPOINT=false
 EOF
 chmod 600 "$HOME/vortex-worker/secrets/worker.env"</pre>
-<p><code>hermes.env</code> yalnız gerekli provider/CLIProxy ayarlarını içerir. <code>hermes-config.yaml</code> model/provider config'tir. Gerçek değerleri komut geçmişine veya sohbet ekranına yapıştırma.</p>
+<p><code>hermes.env</code> yalnız gerekli provider/CLIProxy ayarlarını içerir. <code>hermes-config.yaml</code> model/provider config'tir. Gerçek değerleri komut geçmişine veya sohbet ekranına yapıştırma. Worker job başlarken bu seed dosyalarını kullanıcıya ait <code>data/users/&lt;WORKSPACE_ID&gt;/hermes-home/</code> alanına kopyalar; seed veya bu kullanıcı alanını backup'a koyma.</p>
+<div class="warn note"><strong>Docker provider değişkenleri:</strong> Worker container'a yalnız <code>OPENAI_API_KEY</code>, <code>OPENROUTER_API_KEY</code>, <code>NVIDIA_API_KEY</code> ve <code>OPENAI_BASE_URL</code> adlarını aktarır. Kullandığın private secret düzeninin bu değerleri Worker process environment'ına güvenli biçimde verdiğini, gerçek one-shot testiyle doğrula.</div>
+<p><code>VORTEX_REQUIRE_PRIVATE_SERVER_ENDPOINT=true</code> yalnız doğrulanmış private IP, <code>localhost</code> veya <code>.ts.net</code> endpoint kullanıyorsan seçilir. Public HTTPS Server kullanıyorsan <code>false</code> kalır.</p>
 <h3>3.2 Server ile zorunlu eşleşme</h3>
 <ul><li><code>VORTEX_WORKER_ID</code> = Server <code>Worker:AllowedWorkerId</code></li><li><code>VORTEX_WORKER_TOKEN</code> = Server <code>Worker:ServiceToken</code></li><li><code>VORTEX_SERVER_URL</code> = public HTTPS veya doğrulanmış private/Tailscale Server endpoint</li></ul>
 <p>İlk iki değer farklıysa Worker heartbeat isteği <code>401 Unauthorized</code> alır. Server Worker'ı offline görür, işler <code>Queued</code> kalır.</p>
@@ -235,6 +253,7 @@ systemctl --user enable --now vortex-hermes-worker
 systemctl --user status vortex-hermes-worker --no-pager -l</pre>
 <p>WSL kapansa bile user service devam etsin istiyorsan:</p>
 <pre>loginctl enable-linger "$USER"</pre>
+<div class="warn note"><strong>Autostart sınırı:</strong> linger, WSL dağıtımı çalışmaya başladıktan sonra user service'in canlı kalmasına yardım eder. Windows açılınca WSL ve Docker Desktop kendiliğinden başlamıyorsa Worker da başlamaz. Yeni laptopta Windows restart sonrası Docker Desktop, WSL dağıtımı, service ve <code>/health/worker</code> kontrolünü ayrıca yap.</div>
 <h3>3.6 Public paylaşım güvenlik sınırı</h3>
 <div class="danger note"><strong>Public release içine asla koyma:</strong> gerçek server alan adı/IP adresi, <code>VORTEX_WORKER_TOKEN</code>, <code>Worker:ServiceToken</code>, <code>OPENAI_API_KEY</code>, CLIProxy key, <code>worker.env</code>, <code>hermes.env</code>, <code>hermes-config.yaml</code>, <code>data/</code>, logs, Docker container/volume state, database veya kullanıcı workspace'i.</div>
 <p>Public-safe içerik yalnız source, Dockerfile, örnek <code>worker.env</code> template'i, secret-free <code>vortex-hermes-worker.service.example</code>, <code>publish-wsl-worker.sh</code> ve bu rehberdir. Örneklerde yalnız <code>&lt;SUNUCU_ALANI&gt;</code>, <code>&lt;TOKEN&gt;</code> gibi placeholder kullan. Bununla public rehber, Server IP/hostname veya hangi API sağlayıcısının kullanıldığı bilgisini sızdırmaz.</p>
