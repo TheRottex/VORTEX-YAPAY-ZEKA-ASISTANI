@@ -357,7 +357,7 @@ Private WSL Hermes Worker için ayrıntılı operasyon, bakım, tanılama ve kur
 </td>
 <td width="50%" valign="top">
 
-### ⚙️ [Vortex.HermesWorker/HermesWorker.md](Vortex.HermesWorker/HermesWorker.md)
+### ⚙️ [Vortex.HermesWorker/README.html](Vortex.HermesWorker/README.html)
 
 Worker kaynak bileşeninin geliştirme, build ve kod seviyesindeki sorumluluk rehberi.
 
