@@ -56,7 +56,7 @@ Bu destek; ekibin proje fikrini olgunlaştırmasına, teknik çalışmalarını 
     <img src="docs/images/interface/vortex-interface-overview.png" alt="Vortex arayüz genel görünümü" width="48%" />
   </picture>
   <picture>
-    <img src="docs/images/setup/vortex-setup-overview.png" alt="Vortex kurulum ve ilk yapılandırma görünümü" width="48%" />
+    <img src="docs/images/interface/raw/vortex-orb.png" alt="Vortex djital arayüz maskotu Vortex ORB seseli komutlar alıgladığında ana ekrana gelir." width="48%" />
   </picture>
 </p>
 

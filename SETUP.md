@@ -31,7 +31,7 @@ Web arayüzü, kullanıcı tarayıcısından API anahtarı istemez. Başarılı 
 
 ## Kurulum görünümü
 
-![Vortex kurulum görünümü](images/setup/vortex-setup-overview.png)
+![Vortex kurulum görünümü](docs/images/setup/vortex-setup-overview.png)
 
 Bu ekran görüntüsü, Vortex'in kurulum ve ilk yapılandırma deneyimini belgelemek için ayrılmıştır. Public belgede yer alan görseller, gerçek kullanıcı verileri, parolalar, tokenlar veya üretim adresleri göstermemelidir.
 
