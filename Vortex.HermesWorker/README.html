@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vortex.HermesWorker — Private WSL Operasyon Rehberi</title>
+  <style>
+    :root { color-scheme:dark; --bg:#0a101c; --panel:#131e31; --ink:#e7eef9; --muted:#aab8cd; --line:#2a3d5b; --accent:#62c4ff; --warn:#ffd376; --danger:#ff9696; }
+    * { box-sizing:border-box; } body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif; } main { max-width:1050px; margin:auto; padding:32px 20px 64px; } header,section { background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:24px; margin:18px 0; } h1,h2 { line-height:1.2; } h1 { margin-top:0; } h2 { color:var(--accent); } a { color:var(--accent); } pre { overflow:auto; background:#080d16; border:1px solid var(--line); border-radius:10px; padding:16px; white-space:pre-wrap; } code { color:#dce9ff; } .note { border-left:4px solid var(--accent); padding:12px 16px; background:#0d1930; } .warn { border-left-color:var(--warn); } .danger { border-left-color:var(--danger); } table { width:100%; border-collapse:collapse; } th,td { border:1px solid var(--line); padding:10px; text-align:left; vertical-align:top; } th { color:var(--accent); } .toc a { display:inline-block; margin:4px 12px 4px 0; }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <p>ROL: PRIVATE WSL / HERMES WORKER</p>
+    <h1>Vortex.HermesWorker Operasyon Rehberi</h1>
+    <p>Bu rehber yalnız private WSL/Linux Worker içindir. Hermes burada çalışır; public Vortex.Server üzerinde çalışmaz.</p>
+    <nav class="toc" aria-label="İçindekiler">
+      <a href="#sinir">Sınır</a><a href="#layout">Layout</a><a href="#config">Config</a><a href="#cookbook">Komut Kitabı</a><a href="#docker">Docker</a><a href="#run">Run</a><a href="#verify">Verify</a><a href="#fail">Failure</a><a href="#rollback">Rollback</a><a href="#backup">Yedek</a>
+    </nav>
+  </header>
+
+  <section id="sinir">
+    <h2>1. Private çalışma sınırı</h2>
+    <pre><code>Private WSL/Linux
+  Vortex.HermesWorker
+    | outbound HTTPS
+    v
+Public Vortex.Server
+    | queue / owner auth / result storage
+    X Hermes çalıştırmaz</code></pre>
+    <div class="note danger"><strong>Yasak:</strong> Hermes, Docker Worker veya Hermes seed dosyalarını public Server'a kurma. Laptop/WSL için inbound public port açma.</div>
+    <ul>
+      <li>Worker yalnız outbound authenticated Server istekleri yapar: heartbeat, claim, job heartbeat, completion.</li>
+      <li>Docker modu seçilmişse Docker failure process-mode fallback yapmaz.</li>
+      <li>Bu rehber Tailscale kurmaz, başlatmaz veya ACL değiştirmez.</li>
+    </ul>
+  </section>
+
+  <section id="layout">
+    <h2>2. Kalıcı data ve owner isolation</h2>
+    <pre><code>&lt;VORTEX_WORKER_DATA&gt;/
+  users/&lt;server-workspace-id&gt;/
+    workspace/
+    hermes-home/
+    memory/
+    automations/
+    artifacts/
+    temp/</code></pre>
+    <ul>
+      <li>Her user/workspace için ayrı dizin kullanılır. Workspace veya <code>hermes-home</code> kullanıcılar arasında paylaşılmaz.</li>
+      <li>Hermes seed <code>config.yaml</code> ve opsiyonel <code>.env</code> data root ve repository dışında kalır.</li>
+      <li>Worker her job öncesi güvenli seed dosyasını job-specific Hermes home içine kopyalar.</li>
+      <li>Yapılandırılmış bir seed dosyası eksik, yanlış adlandırılmış veya güvenli değilse job fail-closed olur. Seed path hiç yapılandırılmamışsa Worker seed kopyalamayı atlar; gerçek Hermes runtime seed gerektiriyorsa operator path'i açıkça yapılandırmalıdır.</li>
+    </ul>
+  </section>
+
+  <section id="config">
+    <h2>3. Private environment contract</h2>
+    <div class="note warn">Private environment file user-owned, repository dışı ve restrictive permission ile tutulur. <code>VORTEX_WORKER_TOKEN</code> ve provider key yalnız bu private dosyada/secret manager'da tutulur; değerlerini bu rehbere, repository'ye veya loglara yazma. Seed içeriği ayrı private dosyada kalır.</div>
+    <table>
+      <thead><tr><th>Değişken</th><th>Amaç</th></tr></thead>
+      <tbody>
+        <tr><td><code>VORTEX_SERVER_URL</code></td><td>Public Server HTTPS origin.</td></tr>
+        <tr><td><code>VORTEX_WORKER_ID</code></td><td>Server'ın kabul ettiği Worker kimliği.</td></tr>
+        <tr><td><code>VORTEX_WORKER_TOKEN</code></td><td>Zorunlu HMAC secret. CLI argümanı değildir; child/container'a geçmez.</td></tr>
+        <tr><td><code>VORTEX_WORKER_DATA</code></td><td>Private, durable per-user workspace root.</td></tr>
+        <tr><td><code>VORTEX_HERMES_EXECUTION_MODE</code></td><td><code>process</code> veya <code>docker</code>. Geçersiz değer fail-closed.</td></tr>
+        <tr><td><code>VORTEX_DOCKER_CLI_PATH</code>, <code>VORTEX_DOCKER_HERMES_IMAGE</code></td><td>Docker CLI/image seçimi.</td></tr>
+        <tr><td><code>HERMES_CONFIG_SEED_PATH</code>, <code>HERMES_ENV_SEED_PATH</code></td><td>Repository/data root dışındaki private Hermes seed dosyaları.</td></tr>
+        <tr><td><code>VORTEX_REQUIRE_PRIVATE_SERVER_ENDPOINT</code></td><td>Private endpoint guard. Public HTTPS origin kullanılırken <code>false</code> kalır.</td></tr>
+      </tbody>
+    </table>
+    <p>Secret-free variable şablonu: <a href="vortex-hermes-worker.env.example">vortex-hermes-worker.env.example</a>.</p>
+    <div class="note warn">Tailscale/private endpoint doğrulanmadan guard değerini <code>true</code> yapma. Bu durumda normal public hostname/IP fail-closed reddedilir.</div>
+  </section>
+
+  <section id="cookbook">
+    <h2>4. Komut Kitabı — doğru kabuk ve preflight</h2>
+    <div class="note"><strong>Kabuk ayrımı:</strong> <code>PS C:\&gt;</code> Windows PowerShell'dir; <code>$</code> Linux/WSL shell'dir. <code>wsl --status</code> ve <code>wsl -l -v</code> yalnız Windows PowerShell'de; <code>systemctl</code>, <code>docker</code> ve Linux <code>dotnet</code> yalnız hedef WSL dağıtımında çalıştırılır.</div>
+    <h3>[SALT-OKUNUR] Windows WSL doğrulaması</h3>
+    <pre><code>wsl --status
+wsl -l -v</code></pre>
+    <h3>[SALT-OKUNUR] WSL/Linux runtime doğrulaması</h3>
+    <pre><code>systemctl --version
+systemctl --user is-system-running || true
+docker version
+docker info
+dotnet --info
+df -h</code></pre>
+    <p><code>docker: command not found</code> Docker Desktop/WSL integration veya Docker CLI eksikliğidir; Worker/Hermes E2E readiness kanıtı değildir. <code>Failed to start the systemd user session</code> WSL/systemd user-session blocker'ıdır; önce WSL durumunu doğrula, Worker restart ile gizleme.</p>
+    <h3>[SALT-OKUNUR] Private girdilerin varlık/izin kontrolü</h3>
+    <pre><code>stat -c '%a %n' &lt;PRIVATE_WORKER_ENV_FILE&gt;
+test -f &lt;HERMES_CONFIG_SEED_PATH&gt;
+test -f &lt;HERMES_ENV_SEED_PATH&gt;
+docker image inspect &lt;IMAGE_TAG&gt;
+readlink -f "$HOME/vortex-worker/current" 2&gt;/dev/null || true</code></pre>
+    <p>Özel environment veya seed içeriğini <code>cat</code> etme, yazdırma ya da bu rehbere ekleme. Source mount yoksa veya <code>docker/hermes/Dockerfile</code> bulunamazsa guessed path ile build deneme; doğrulanmış source veya image artifact kullan.</p>
+  </section>
+
+  <section id="docker">
+    <h2>5. Docker image readiness</h2>
+    <p><strong>[RUNTIME DEĞİŞTİRİR]</strong> Build Docker image state oluşturur. <strong>[GEÇİCİ DOĞRULAMA]</strong> <code>--rm</code> smoke container'ı işlem sonunda siler.</p>
+    <pre><code>cd &lt;Vortex-Clean-Source&gt;
+test -f docker/hermes/Dockerfile
+docker build -t &lt;IMAGE_TAG&gt; -f docker/hermes/Dockerfile .
+docker run --rm &lt;IMAGE_TAG&gt; --help
+docker image inspect &lt;IMAGE_TAG&gt;</code></pre>
+    <p>Bu sadece image/entrypoint readiness smoke kontrolüdür. Server → Worker → Hermes gerçek E2E kanıtı değildir.</p>
+    <ul>
+      <li>Image bind-mounted <code>/workspace</code> ve <code>HERMES_HOME</code> izinlerini kısa süre root ile düzeltir, sonra non-root <code>hermes</code> kullanıcısına iner.</li>
+      <li>Container one-shot, <code>--rm</code>, bridge network ve dar bind mount sınırlarıyla çalışır.</li>
+      <li>Docker daemon, image veya güvenli resource limit yoksa Worker gerçek failure bildirir; direct-process fallback yoktur.</li>
+      <li>Worker yalnız allowlisted model-router environment değerlerini container'a geçirebilir. Worker HMAC token geçmez.</li>
+    </ul>
+  </section>
+
+  <section id="run">
+    <h2>6. Worker başlatma</h2>
+    <pre><code># Private environment dosyasını secret göstermeden yükle
+set -a
+. &lt;private-worker-env-file&gt;
+set +a
+
+# Publish edilmiş Worker output içinden örnek başlatma
+dotnet &lt;private-worker-output&gt;/Vortex.HermesWorker.dll</code></pre>
+    <p>Çalıştırmadan önce Docker daemon, image, seed dosyaları, private data root yazma izni ve Server URL hazır olmalı. Eksik bağımlılığı fake response ile geçme.</p>
+    <p>Kaynak koddan geliştirme için:</p>
+    <pre><code>dotnet run --project Vortex.HermesWorker/Vortex.HermesWorker.csproj</code></pre>
+    <h3>[RUNTIME DEĞİŞTİRİR] Published Worker systemd lifecycle</h3>
+    <pre><code>systemctl --user daemon-reload
+systemctl --user start vortex-hermes-worker
+systemctl --user status vortex-hermes-worker --no-pager -l
+
+# Yalnız doğrulanmış güncelleme için: versioned publish + current symlink + restart
+cd "$HOME/vortex-worker/source"
+./Vortex.HermesWorker/publish-wsl-worker.sh "$PWD"
+readlink -f "$HOME/vortex-worker/current"</code></pre>
+    <p>Helper private environment dosyasının varlığını/izinini doğrular, timestamped release üretir, <code>current</code> bağlantısını değiştirir ve user service'i yeniden başlatır. Bu nedenle rutin health komutu değildir.</p>
+  </section>
+
+  <section id="verify">
+    <h2>7. Readiness ve kontrollü doğrulama</h2>
+    <pre><code># [SALT-OKUNUR] Public Server Worker readiness — Worker başlatmaz
+curl -fsS &lt;PUBLIC_SERVER_ORIGIN&gt;/health/worker
+
+# [SALT-OKUNUR] Son Worker journal; paylaşmadan önce secret redaksiyonu yap
+journalctl --user -u vortex-hermes-worker -n 200 --no-pager
+tail -n 200 "$HOME/vortex-worker/data/logs/worker.log" 2&gt;/dev/null || true</code></pre>
+    <ol>
+      <li>Önce Docker/image readiness doğrula.</li>
+      <li>Worker başlat; heartbeat/readiness görünmesini bekle.</li>
+      <li>Yalnız owner-authenticated kontrollü job gönder.</li>
+      <li>Gerçek Server → Worker → Hermes sonuç metnini ve owner-only erişimi doğrula.</li>
+    </ol>
+    <div class="note">Queue accepted, Worker job completed veya LocalAgent response tek başına masaüstü görsel eylemi doğrulamaz. Gerçek desktop değişimi kullanıcı gözlemi veya frame/screenshot kanıtı gerektirir.</div>
+  </section>
+
+  <section id="fail">
+    <h2>8. Failure triage</h2>
+    <table>
+      <thead><tr><th>Durum</th><th>Doğru davranış</th></tr></thead>
+      <tbody>
+        <tr><td>Docker daemon/image unavailable</td><td>Worker unready/failure bırak. Process mode'a otomatik geçme.</td></tr>
+        <tr><td>Seed dosyası unavailable veya unsafe</td><td>Job fail-closed olur. Dosya konumu/permission düzelt; içeriği loglama.</td></tr>
+        <tr><td>Provider/model router unavailable</td><td>Gerçek provider failure raporla. Sonuç uydurma.</td></tr>
+        <tr><td>Public Server health var, Worker health yok</td><td>Worker environment, outbound connectivity, Worker ID/token ve Docker readiness kontrol et.</td></tr>
+        <tr><td>Private endpoint guard reject</td><td>Public HTTPS topology'de guard <code>false</code> kalır. Private endpoint yalnız ayrı doğrulanmış transport aşamasında kullanılır.</td></tr>
+        <tr><td>IPv6 bağlantısı başarısız, IPv4 erişilebilir</td><td>Önce <code>curl -4</code> ve <code>curl -6</code> ile ayrımı doğrula; geçici ağ bypass'ını kalıcı Worker ayarı yapmadan önce operator onayı ve kalıcı ağ çözümü gerekir.</td></tr>
+        <tr><td>CLIProxy endpoint/port belirsiz</td><td>Gerçek private Worker config'teki endpointi doğrula. Eski örneklerdeki portu körlemesine kopyalama; container-to-host erişimini seçilmiş endpoint ile test et.</td></tr>
+      </tbody>
+    </table>
+    <h3>[SALT-OKUNUR] Ağ ve container-to-host model path sınırı</h3>
+    <pre><code>curl -4 -I --connect-timeout 10 &lt;PUBLIC_SERVER_ORIGIN&gt;
+curl -6 -I --connect-timeout 10 &lt;PUBLIC_SERVER_ORIGIN&gt;
+docker run --rm --entrypoint python --network bridge \
+  --add-host host.docker.internal:host-gateway &lt;IMAGE_TAG&gt; \
+  -c "import urllib.request; print(urllib.request.urlopen('&lt;CONFIRMED_LOCAL_MODEL_ENDPOINT&gt;/models', timeout=10).status)"</code></pre>
+    <p>Bu endpoint testi secret yazdırmaz; ancak Docker/container state kullandığı için yalnız private sistemde ve onaylanmış endpoint ile yapılır.</p>
+  </section>
+
+  <section id="rollback">
+    <h2>9. Worker rollback</h2>
+    <p><strong>[RUNTIME DEĞİŞTİRİR]</strong> Önce aktif ve eski release dizinlerini incele. İlk olay müdahalesinde hiçbir release silme.</p>
+    <pre><code>readlink -f "$HOME/vortex-worker/current"
+ls -ld "$HOME/vortex-worker/releases"/*
+
+KNOWN_GOOD_RELEASE="&lt;OLDER_RELEASE_DIRECTORY&gt;"
+test -f "$KNOWN_GOOD_RELEASE/Vortex.HermesWorker.dll"
+ln -s "$KNOWN_GOOD_RELEASE" "$HOME/vortex-worker/current.rollback"
+mv -Tf "$HOME/vortex-worker/current.rollback" "$HOME/vortex-worker/current"
+systemctl --user restart vortex-hermes-worker
+systemctl --user status vortex-hermes-worker --no-pager -l</code></pre>
+  </section>
+
+  <section id="backup">
+    <h2>10. Portable backup ve restore sınırı</h2>
+    <table><thead><tr><th>Pakete alınabilir</th><th>Asla portable/source pakete alma</th></tr></thead><tbody>
+      <tr><td>Source, Dockerfile, service/env template, release payload, kontrollü image TAR, manifest/checksum.</td><td>Gerçek worker environment, Hermes seeds, provider/model key, data root, user workspace, log, database, Docker volume/container/cache/credential state.</td></tr>
+    </tbody></table>
+    <pre><code># [SALT-OKUNUR] İndirilmiş/taşınmış artifact bütünlüğü
+sha256sum -c &lt;CHECKSUM_FILE&gt;
+docker image inspect &lt;IMAGE_TAG&gt;</code></pre>
+    <p><code>docker load</code>, archive extraction, release activation ve live data restore durum değiştirir; bunlar normal start komutu değildir ve ayrı onaylı kurtarma prosedürü ister.</p>
+  </section>
+
+  <section>
+    <h2>11. Public Server rehberi</h2>
+    <p>Public Nginx/Server release, health ve rollback için <a href="../../Vortex.Server/README.html">Vortex.Server/README.html</a> dosyasına bak.</p>
+  </section>
+</main>
+</body>
+</html>

@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vortex.Server — Public Server Operasyon Rehberi</title>
+  <style>
+    :root { color-scheme: dark; --bg:#0b1020; --panel:#131b31; --ink:#e6edf8; --muted:#a9b7d0; --line:#2b3a5c; --accent:#65b7ff; --warn:#ffd479; --danger:#ff9494; }
+    * { box-sizing:border-box; } body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif; }
+    main { max-width:1050px; margin:auto; padding:32px 20px 64px; } header, section { background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:24px; margin:18px 0; }
+    h1,h2,h3 { line-height:1.2; } h1 { margin-top:0; } h2 { color:var(--accent); } a { color:var(--accent); } code { color:#dce9ff; } pre { overflow:auto; background:#080d19; border:1px solid var(--line); border-radius:10px; padding:16px; white-space:pre-wrap; } .note { border-left:4px solid var(--accent); padding:12px 16px; background:#0e1930; } .warning { border-left-color:var(--warn); } .danger { border-left-color:var(--danger); } table { width:100%; border-collapse:collapse; } th,td { border:1px solid var(--line); padding:10px; text-align:left; vertical-align:top; } th { color:var(--accent); } .toc a { display:inline-block; margin:4px 12px 4px 0; }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <p>ROL: PUBLIC API / QUEUE / AUTH</p>
+    <h1>Vortex.Server Operasyon Rehberi</h1>
+    <p>Bu rehber public Vortex.Server içindir. Hermes veya HermesAgent burada kurulmaz, başlatılmaz, Docker içinde çalıştırılmaz.</p>
+    <nav class="toc" aria-label="İçindekiler">
+      <a href="#sinir">Sınır</a><a href="#topoloji">Topoloji</a><a href="#gelistirme">Geliştirme</a><a href="#config">Yapılandırma</a><a href="#cookbook">Komut Kitabı</a><a href="#release">Release</a><a href="#health">Health</a><a href="#proxy">Proxy</a><a href="#rollback">Rollback</a><a href="#backup">Yedek</a>
+    </nav>
+  </header>
+
+  <section id="sinir">
+    <h2>1. Güvenlik sınırı</h2>
+    <div class="note danger"><strong>Kural:</strong> Public Server kullanıcı kimliği, API, kota, job queue ve owner-only sonucu yönetir. Gerçek Hermes işlemi yalnız private <code>Vortex.HermesWorker</code> tarafında olur.</div>
+    <ul>
+      <li>Public Server üzerinde Hermes, HermesAgent veya Worker Docker container çalıştırma.</li>
+      <li>Worker laptop/WSL tarafından Server'a outbound HTTPS ile bağlanır.</li>
+      <li>Worker için public inbound port açma.</li>
+      <li>Bu rehber Tailscale kurmaz veya başlatmaz.</li>
+    </ul>
+  </section>
+
+  <section id="topoloji">
+    <h2>2. Üretim topolojisi referansı</h2>
+    <pre><code>Internet
+  |
+  v
+Nginx TLS :443
+  |-- /api, /health, worker API --&gt; Vortex.Server 127.0.0.1:5000
+  `-- browser sayfaları             --&gt; Vortex.Web    127.0.0.1:5080
+
+Private laptop / WSL
+  Vortex.HermesWorker -- outbound HTTPS --&gt; public Vortex.Server
+  `-- private Docker / Hermes one-shot</code></pre>
+    <p>Hedef public origin: <code>https://vortex.rottexforge.com</code>. Bu şema mevcut üretim konfigürasyonunu değiştirmez; operator kendi Nginx, DNS, TLS ve health kontrolüyle doğrulamalıdır. Upstream servisler loopback'te kalır.</p>
+  </section>
+
+  <section id="gelistirme">
+    <h2>3. Kaynaktan geliştirme</h2>
+    <pre><code>dotnet build VortexAI.sln -c Debug
+dotnet run --project Vortex.Server/Vortex.Server.csproj
+curl -fsS http://127.0.0.1:5000/health</code></pre>
+    <p>Geliştirme profili loopback <code>127.0.0.1:5000</code> kullanır. Development ayarlarını Production'a kopyalama.</p>
+  </section>
+
+  <section id="config">
+    <h2>4. Production yapılandırması</h2>
+    <div class="note warning">Gizli değerler repo, HTML, shell history veya public <code>appsettings.json</code> içine yazılmaz. Protected systemd EnvironmentFile veya secret manager kullan.</div>
+    <table>
+      <thead><tr><th>Ad</th><th>Amaç</th></tr></thead>
+      <tbody>
+        <tr><td><code>Jwt__SigningKey</code></td><td>Production için zorunlu JWT imza anahtarı. En az 32 UTF-8 byte, varsayılan/değersiz anahtar olamaz.</td></tr>
+        <tr><td><code>Vortex__PublicBaseUrl</code></td><td>Public API/OAuth callback origin.</td></tr>
+        <tr><td><code>Vortex__WebBaseUrl</code></td><td>Web OAuth tamamlanma origin.</td></tr>
+        <tr><td><code>Vortex__AllowedOrigins__0</code></td><td>Geçerli public CORS origin allowlist girdisi.</td></tr>
+        <tr><td><code>Vortex__DataDirectory</code></td><td>Kalıcı, servis kullanıcısının yazabildiği SQLite/data dizini.</td></tr>
+        <tr><td><code>Worker__AllowedWorkerId</code></td><td>Kabul edilen private Worker kimliği.</td></tr>
+        <tr><td><code>Worker__ServiceToken</code></td><td>Worker HMAC isteği için secret; asla istemciye verilmez.</td></tr>
+        <tr><td><code>OAuth__Google__*</code>, <code>OAuth__GitHub__*</code></td><td>İlgili provider etkinse server-side OAuth yapılandırması.</td></tr>
+        <tr><td><code>AiProviders__*</code></td><td>Etkin provider/STT/TTS secret ayarları; server-side kalır.</td></tr>
+      </tbody>
+    </table>
+
+    <h3>OAuth ve Kimlik Doğrulama Yapılandırması</h3>
+    <ul>
+      <li><strong>Google/GitHub OAuth Sağlayıcı İstemci Anahtarları:</strong> <code>OAuth__Google__ClientId</code>, <code>OAuth__Google__ClientSecret</code>, <code>OAuth__GitHub__ClientId</code> ve <code>OAuth__GitHub__ClientSecret</code> üretim ortamında güvenli bir şekilde tanımlanmalıdır.</li>
+      <li><strong>Geri Çağırma (Callback) Adresleri:</strong> OAuth sağlayıcılarında kayıtlı callback yolları şu formatta olmalıdır: <code>https://vortex.rottexforge.com/api/auth/{provider}/callback</code></li>
+      <li><strong>Anahtar Varlığı Kontrol Komutları:</strong> systemd ortam değişkenleri arasında OAuth anahtarlarının varlığını doğrulamak için şu komut kullanılabilir:
+        <pre><code>systemctl show vortex-server -p Environment --value | tr ' ' '\n' | grep -q '^OAuth__Google__ClientId='</code></pre>
+      </li>
+      <li><strong>Otomasyon Tokenı ve Kimlik Girişi Ayrımı:</strong> Otomasyon tokenı (örneğin <code>Worker__ServiceToken</code>) arka plan servislerinin ve worker'ların güvenli makine-makine (M2M) haberleşmesini sağlarken, identity login (OAuth) gerçek kullanıcıların tarayıcı veya masaüstü uygulaması üzerinden kimlik doğrulaması yapması içindir. Google identity login sadece temel kimlik yetkileri (<code>openid email profile</code>) talep eder, Gmail otomasyon yetkilendirmesi (Vault) tamamen ayrı bir onay aşamasıdır.</li>
+      <li><strong>Tarayıcı Tabanlı CSRF Risk Detayları:</strong> OAuth akışının güvenliği için CSRF (Cross-Site Request Forgery) koruması elzemdir. Başlatılan oturum talebine ait benzersiz <code>state</code> değeri hem kullanıcının tarayıcısına çerez (browser-bound cookie) olarak yazılır hem de sağlayıcıya gönderilir. Callback adımında bu iki değerin birebir eşleşmesi ve daha önce tüketilmemiş olması zorunludur; aksi takdirde istek reddedilir.</li>
+    </ul>
+  </section>
+
+  <section id="cookbook">
+    <h2>5. Komut Kitabı — doğru kabuk ve güvenli preflight</h2>
+    <div class="note"><strong>Önce kabuğu doğrula:</strong> <code>PS C:\&gt;</code> Windows PowerShell'dir; <code>$</code> veya <code>#</code> Linux/SSH shell'dir. Windows <code>dotnet publish</code>, <code>tar</code> ve <code>scp</code> komutlarını SSH ekranına; Linux <code>systemctl</code>, <code>journalctl</code> ve <code>curl 127.0.0.1</code> komutlarını Windows PowerShell'e yapıştırma.</div>
+
+    <h3>[SALT-OKUNUR] Canlı Server preflight (Linux / SSH shell)</h3>
+    <pre><code>systemctl status vortex-server --no-pager -l
+systemctl show vortex-server --property=ExecStart --property=WorkingDirectory --property=User --property=EnvironmentFiles --no-pager
+readlink -f &lt;SERVER_RELEASE_ROOT&gt;/current
+dotnet --list-runtimes
+nginx -t
+curl -fsS http://127.0.0.1:5000/health
+curl -fsS http://127.0.0.1:5000/health/worker</code></pre>
+    <p>Önce loopback health kontrol edilir; sonra operatorın doğruladığı <code>&lt;PUBLIC_SERVER_ORIGIN&gt;</code> üzerinden public health kontrol edilir. Loopback başarısızsa service/config/runtime/data-permission problemi çözülmeden Nginx, DNS veya public proxy değiştirilmez.</p>
+
+    <h3>[RUNTIME DEĞİŞTİRİR] Normal start/restart</h3>
+    <pre><code>systemctl restart vortex-server
+systemctl status vortex-server --no-pager -l
+curl -fsS http://127.0.0.1:5000/health</code></pre>
+    <p>Restart yalnız ilgili servisi etkiler; Nginx, Worker veya başka servisleri rutin Server restart için yeniden başlatma.</p>
+
+    <h3>[SALT-OKUNUR] Bounded hata tanısı</h3>
+    <pre><code>journalctl -u vortex-server -n 200 --no-pager
+systemctl status nginx --no-pager
+nginx -t
+curl -sS -i http://127.0.0.1:5000/health
+curl -sS -i http://127.0.0.1:5000/health/worker
+curl -sS -i http://127.0.0.1:5000/api/diagnostics/worker</code></pre>
+    <table><thead><tr><th>Gözlem</th><th>Anlamı / sonraki sınır</th></tr></thead><tbody>
+      <tr><td>Loopback <code>/health</code> başarısız</td><td>Önce <code>vortex-server</code> journal, runtime, protected environment ve kalıcı data dizinini incele.</td></tr>
+      <tr><td>Loopback başarılı, public health başarısız</td><td>Server process sağlıklıdır; Nginx/TLS/DNS/proxy/origin erişimini incele. Körlemesine yeniden deploy etme.</td></tr>
+      <tr><td><code>/health/worker</code> offline/unready</td><td>Public Server sağlıklı olabilir; private Worker outbound erişimi, kimliği, Docker/image ve readiness incelenmelidir.</td></tr>
+      <tr><td><code>/api/diagnostics/worker</code> 404</td><td>Canlı Server sürümü veya proxy upstream'i endpointi içermiyor olabilir.</td></tr>
+      <tr><td><code>/api/diagnostics/worker</code> 403</td><td>Endpoint vardır; istek Owner/Administrator/Support rolü olmadan yapılmıştır.</td></tr>
+      <tr><td><code>/api/diagnostics/worker</code> 200</td><td>Yetkili tanı sonucu; job durumunu ve <code>ErrorCode</code> değerini güvenli kanalda incele.</td></tr>
+    </tbody></table>
+  </section>
+
+  <section id="release">
+    <h2>6. Private versioned release</h2>
+    <h3>[RUNTIME DEĞİŞTİRMEZ] Windows PowerShell'de private publish ve paket doğrulaması</h3>
+    <pre><code>./scripts/windows/publish-server-private.ps1
+Get-FileHash &lt;ARCHIVE_PATH&gt; -Algorithm SHA256</code></pre>
+    <p>Publish çıktısı private altyapı paketi sayılır. Public GitHub, ticket veya chat içine yükleme. Bu script uzaktaki Server'a upload veya restart yapmaz.</p>
+    <h3>[DEĞİŞTİRİR / OPERATOR ONAYI GEREKİR] Sürümlü activation</h3>
+    <pre><code># Linux/SSH: aktif hedefi kaydet; yeni release önceden checksum ile doğrulanmış olmalı
+OLD_RELEASE="$(readlink -f &lt;SERVER_RELEASE_ROOT&gt;/current)"
+NEW_RELEASE="&lt;SERVER_RELEASE_ROOT&gt;/releases/&lt;RELEASE_ID&gt;"
+test -f "$NEW_RELEASE/Vortex.Server.dll"
+
+# Yeni hedefi atomik değiştir ve yalnız Server'ı yeniden başlat
+ln -s "$NEW_RELEASE" &lt;SERVER_RELEASE_ROOT&gt;/current.next
+mv -Tf &lt;SERVER_RELEASE_ROOT&gt;/current.next &lt;SERVER_RELEASE_ROOT&gt;/current
+systemctl restart vortex-server
+curl -fsS http://127.0.0.1:5000/health</code></pre>
+    <p>Mevcut aktif release silinmez. Protected environment/drop-in dosyaları yerinde kalır; publish payload'ına kopyalanmaz veya görüntülenmez.</p>
+    <div class="note">Önerilen release düzeni: systemd versioned bir release dizinindeki DLL'i <code>current</code> bağlantısı üzerinden çalıştırır. Kendi operator-managed unit dosyanı incele; bağlantı değişimi ve restart yalnız doğrulanmış release için yapılır.</div>
+  </section>
+
+  <section id="health">
+    <h2>6. Health ve doğrulama</h2>
+    <pre><code>curl -fsS http://127.0.0.1:5000/health
+curl -fsS http://127.0.0.1:5000/health/worker
+curl -fsS https://vortex.rottexforge.com/health
+curl -fsS https://vortex.rottexforge.com/health/worker</code></pre>
+    <ul>
+      <li><code>/health</code>: Vortex.Server process health.</li>
+      <li><code>/health/worker</code>: en son private Worker kayıt/readiness bilgisi; Worker başlatmaz.</li>
+      <li>Worker health başarılı olması Hermes E2E veya masaüstü eylemi kanıtı değildir.</li>
+    </ul>
+  </section>
+
+  <section id="proxy">
+    <h2>7. Nginx ve systemd notu</h2>
+    <div class="note warning">Bu bölüm örnek topolojidir. Mevcut operator-managed Nginx veya systemd dosyalarını bu HTML ile değiştirme.</div>
+    <pre><code># Uyarlanacak Nginx upstream şekli — production dosyasını kopyalama/değiştirme
+location /api/    { proxy_pass http://127.0.0.1:5000; }
+location /health  { proxy_pass http://127.0.0.1:5000; }
+location /        { proxy_pass http://127.0.0.1:5080; }</code></pre>
+    <p>Server yalnız loopback proxy forwarded header'larına güvenir. TLS, sertifika, host header, rate limit, WebSocket/executor route ve mevcut path kurallarını koru.</p>
+    <pre><code># Mevcut servisleri sadece inceleme örneği
+systemctl status vortex-server --no-pager
+systemctl status vortex-web --no-pager
+nginx -t</code></pre>
+  </section>
+
+  <section id="backup">
+    <h2>9. Kalıcı data, SQLite ve yedek sınırı</h2>
+    <div class="note danger"><strong>Release rollback, data restore değildir.</strong> <code>current</code> bağlantısını geri almak yalnız kod sürümünü geri alır. Kalıcı data/SQLite geri yükleme ayrı bakım işlemi ve ayrıca onay gerektirir.</div>
+    <ul>
+      <li><code>Vortex__DataDirectory</code> altındaki tüm kalıcı state yedek kapsamındadır: SQLite ana dosyası, varsa WAL/SHM sidecar'ları, kullanıcı dosyaları ve Server tarafındaki private runtime state.</li>
+      <li>WAL modunda çalışan SQLite için aktif servis sırasında yalnız ana DB dosyasını kopyalama; tutarsız olabilir.</li>
+      <li>Servis kapandığında <code>vortex.db-wal</code> ve <code>vortex.db-shm</code> dosyalarının ortadan kalkması normal olabilir. Backup prosedürü sidecar dosyalarını yalnız varsa eklemeli; yokluk nedeniyle release activation yarıda bırakılmamalıdır.</li>
+      <li>Environment/secret manager materyali data archive içine eklenmez. Şifrelenmiş provider verisini geri yüklemek için uyumlu secret material ayrı, operator-controlled mekanizmada korunmalıdır.</li>
+    </ul>
+    <h3>[SALT-OKUNUR] Data yolu ve dosya varlığı</h3>
+    <pre><code>systemctl cat vortex-server
+find &lt;DURABLE_DATA_DIRECTORY&gt; -maxdepth 2 -type f \( -name 'vortex.db' -o -name 'vortex.db-wal' -o -name 'vortex.db-shm' \) -printf '%p %s bytes\n'</code></pre>
+    <p>Bu rehber genel-purpose restore komutu vermez; canlı data restore, servis stop, sahiplik/izin doğrulaması ve health testleri içeren ayrı bir onaylı incident prosedürüdür.</p>
+  </section>
+
+  <section id="rollback">
+    <h2>10. Atomik aktivasyon ve rollback</h2>
+    <ol>
+      <li>Yeni release payload ve checksum doğrula.</li>
+      <li>Production secret/drop-in ayarlarının yeni release ile uyumunu doğrula; secret kopyalama veya görüntüleme yapma.</li>
+      <li>Önce loopback health kontrolü yap.</li>
+      <li>Önceki release bağlantısını sakla, sonra <code>current</code> bağlantısını atomik değiştir.</li>
+      <li>Yalnız ilgili servisi restart et; loopback ve public health kontrolü yap.</li>
+      <li>Failure durumunda önceki release bağlantısına dön ve service loglarını secret temizleyerek incele.</li>
+    </ol>
+    <h3>[DEĞİŞTİRİR / OPERATOR ONAYI GEREKİR] Copy-ready symlink rollback</h3>
+    <pre><code>KNOWN_GOOD_RELEASE="&lt;SERVER_RELEASE_ROOT&gt;/releases/&lt;OLDER_RELEASE_ID&gt;"
+test -f "$KNOWN_GOOD_RELEASE/Vortex.Server.dll"
+ln -s "$KNOWN_GOOD_RELEASE" &lt;SERVER_RELEASE_ROOT&gt;/current.rollback
+mv -Tf &lt;SERVER_RELEASE_ROOT&gt;/current.rollback &lt;SERVER_RELEASE_ROOT&gt;/current
+systemctl restart vortex-server
+readlink -f &lt;SERVER_RELEASE_ROOT&gt;/current
+curl -fsS http://127.0.0.1:5000/health</code></pre>
+    <p>İlk rollback sırasında failed veya önceki release dizinlerini silme. Önce loopback, sonra public health doğrula.</p>
+  </section>
+
+  <section>
+    <h2>11. Private Worker rehberi</h2>
+    <p>Private WSL Worker, Docker ve Hermes için <a href="../deploy/wsl/README.html">deploy/wsl/README.html</a> dosyasını kullan. Public Server'a Hermes runtime ekleme.</p>
+  </section>
+</main>
+</body>
+</html>

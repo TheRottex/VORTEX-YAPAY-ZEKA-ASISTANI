@@ -238,7 +238,7 @@
           <Border Grid.Row="4" Background="#0b1322" CornerRadius="12" Padding="12,10" BorderBrush="#1e2c4c" BorderThickness="1">
             <Grid>
               <!-- When NOT collapsed -->
-              <Grid ColumnDefinitions="Auto, *, Auto, Auto" IsVisible="{Binding IsSidebarCollapsed, Converter={x:Static conv:BoolConverters.Not}}">
+              <Grid ColumnDefinitions="Auto, *, Auto, Auto, Auto" IsVisible="{Binding IsSidebarCollapsed, Converter={x:Static conv:BoolConverters.Not}}">
                 <Border Grid.Column="0" Width="36" Height="36" CornerRadius="18" Background="#1d4ed8" VerticalAlignment="Center">
                   <TextBlock Text="VA" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="12" FontWeight="Bold" />
                 </Border>

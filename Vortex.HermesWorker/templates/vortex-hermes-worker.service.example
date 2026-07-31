@@ -1,0 +1,17 @@
+[Unit]
+Description=Vortex Hermes Worker
+After=network-online.target docker.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/vortex-worker/current
+EnvironmentFile=%h/vortex-worker/secrets/worker.env
+ExecStart=/usr/bin/dotnet %h/vortex-worker/current/Vortex.HermesWorker.dll
+Restart=on-failure
+RestartSec=10
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=default.target
