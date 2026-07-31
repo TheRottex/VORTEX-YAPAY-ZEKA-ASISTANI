@@ -290,7 +290,7 @@ Private WSL Worker için kapsamlı operasyon belgesidir:
 
 ### Bileşen geliştirme rehberi
 
-[`Vortex.HermesWorker/HermesWorker.md`](Vortex.HermesWorker/HermesWorker.md)
+[`Vortex.HermesWorker/README.html`](Vortex.HermesWorker/README.html)
 
 Doğrudan `Vortex.HermesWorker` kaynak klasörüne ait bileşen belgesidir:
 
