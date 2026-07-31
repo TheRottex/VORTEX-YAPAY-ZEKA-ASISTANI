@@ -22,7 +22,9 @@
     "Vortex.Desktop/Services/ClapDetectionService.cs",
     "Vortex.Desktop/Services/LocalAgentIntentRouter.cs",
     "Vortex.Desktop/Services/WakeWordEngineStatusService.cs",
+    "Vortex.HermesWorker/Program.cs",
     "Vortex.HermesWorker/README.md",
+    "Vortex.HermesWorker/Vortex.HermesWorker.csproj",
     "Vortex.LocalAgent/README.md",
     "Vortex.Public.Tests/DeviceJobCompletionEndpointTests.cs",
     "Vortex.Public.Tests/PublicSecurityTests.cs",
@@ -44,6 +46,7 @@
     "docs/ARCHITECTURE.md",
     "docs/CONFIGURATION.md",
     "docs/INTERFACE.md",
+    "docs/VORTEX_HERMES_WORKER_WSL_GUIDE.html",
     "docs/PUBLIC_EXPORT_MANIFEST.json",
     "docs/PUBLIC_SCOPE.md",
     "docs/REVIEW_GUIDE.md",
@@ -56,18 +59,18 @@
   "exclusions": [
     "Build output and intermediate directories (bin, obj, TestResults, artifacts, publish, packages).",
     "Runtime configuration, credentials, device tokens, databases, logs, archives, checksums, and private local paths.",
-    "Desktop, LocalAgent, Worker, Hermes, Tailscale, Docker, deployment, Admin, private Web source, and operational materials, except for the mandated top-level README files and the exact Vortex.Desktop presentation-only paths listed above."
+    "Desktop and LocalAgent runtime, Tailscale, Docker artifacts, deployment state, Admin runtime, private Web source, Worker runtime configuration, credentials, user state, and operational artifacts are excluded. The explicit Vortex.HermesWorker source/reference files and WSL guide in includedPaths are placeholder-only documentation/source and do not include production configuration."
   ],
   "supportedCapabilities": [
     "Password registration and login with signed bearer-token authentication.",
     "Endpoint-specific direct-peer IP fixed-window limits for registration, login, device registration, action queueing, job claim, and job completion; limits queue no requests and return generic 429 responses.",
     "Owner-scoped device registration, allowlisted action planning and queueing, guarded claim, guarded completion, and owner job status.",
     "Completion response semantics: invalid, unknown, or revoked device credentials return 401; valid-device missing or pending jobs return 404; claimed jobs complete once; retries return the original persisted completion; other state-guard failures return 409.",
-    "Presentation-only source references: ten exact copied Vortex.Desktop paths outside public project compilation, plus the mandated top-level layout README files."
+    "Presentation-only source references: ten exact copied Vortex.Desktop paths outside public project compilation, mandated top-level layout README files, and explicit placeholder-only Vortex.HermesWorker source/reference paths."
   ],
   "unsupportedCapabilities": [
     "No desktop or LocalAgent runtime is included, so this source tree does not execute device actions.",
-    "No Worker, Hermes, Tailscale, Docker, deployment, Admin, private Web, provider, OAuth, package, or release-artifact capability is included.",
+    "No Worker production configuration, runtime environment, Tailscale, Docker image/state, deployment state, Admin runtime, private Web, provider credential, OAuth secret, package, or release-artifact capability is included.",
     "No build output, binary, archive, checksum, private storage, or deployment claim is represented by this manifest."
   ]
 }

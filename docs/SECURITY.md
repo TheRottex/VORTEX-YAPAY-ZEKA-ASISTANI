@@ -4,7 +4,7 @@
 
 Bu depo, yapım aşamasında olan ve doğrulanmamış bir halka açık alt kümedir. Depo, dağıtım talimatları, çalışma zamanı yapılandırma değerleri, gizli bilgiler, özel yollar veya sürüm yükleri içermez.
 
-Özel Hermes çalıştırması, İşçi hizmetleri, Tailscale ağ iletişimi, dağıtım sistemleri, gizli bilgiler ve çalışma zamanı yapılandırması bu deponun dışındadır ve sorun bildirimlerine, belgelere, örneklere veya commit’lere eklenmemelidir.
+Gerçek Hermes çalıştırması, Worker secret'ları, Tailscale ağ iletişimi, production dağıtım sistemleri, gizli bilgiler ve çalışma zamanı yapılandırması bu deponun dışındadır; sorun bildirimlerine, örneklere veya commit’lere eklenmemelidir. Repository, yalnız placeholder kullanan Worker source/reference ve kurulum rehberi içerebilir; gerçek endpoint, IP, token, API anahtarı, kullanıcı yolu, seed veya runtime state içeremez.
 
 ## Güvenlik Açığı Bildirme
 

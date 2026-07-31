@@ -5,7 +5,7 @@ namespace Vortex.Public.Tests;
 
 public sealed class RepositoryHygieneTests
 {
-    private static readonly string[] ForbiddenDirectories = ["HermesWorker", "components", "deploy", "docker"];
+    private static readonly string[] ForbiddenDirectories = ["components", "deploy", "docker"];
     private static readonly string[] ForbiddenExtensions = [".db", ".sqlite", ".sqlite3", ".log", ".zip", ".tar.gz", ".deb", ".rpm", ".pfx", ".p12", ".pem", ".key"];
     private static readonly string PrivateLocalSourcePath = Path.Combine("D:\\.YerelBelgeler", "VORTEX YA");
     private static readonly string[] ForbiddenReleaseIndicators = ["artifact", "checksum", "private-storage", "private storage", "manual-upload", "manual upload", "sha-256", ".sha256"];
@@ -130,7 +130,7 @@ public sealed class RepositoryHygieneTests
         throw new DirectoryNotFoundException("Public repository root was not found.");
     }
 
-    private static bool IsTextSource(string path) => Path.GetExtension(path).ToLowerInvariant() is ".cs" or ".csproj" or ".sln" or ".json" or ".md" or ".txt" or ".yml" or ".yaml" or ".xml" or ".props" or ".targets";
+    private static bool IsTextSource(string path) => Path.GetExtension(path).ToLowerInvariant() is ".cs" or ".csproj" or ".sln" or ".json" or ".md" or ".txt" or ".html" or ".yml" or ".yaml" or ".xml" or ".props" or ".targets";
 
     private sealed record PublicExportManifest(IReadOnlyList<string>? IncludedPaths);
 }

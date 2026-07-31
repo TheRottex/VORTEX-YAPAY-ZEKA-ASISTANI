@@ -57,12 +57,12 @@ Bu public sürüm aşağıdaki bileşenleri içermez:
 
 - Desktop uygulaması
 - LocalAgent
-- Worker servisleri
-- Hermes
+- Worker runtime yapılandırmaları, Worker secret'ları ve Worker binary'leri
+- Hermes seed dosyaları, provider ayarları ve API anahtarları
 - Admin Paneli
-- Docker
+- Docker image, volume ve container state'i
 - Tailscale
-- Deployment altyapısı
+- Gerçek deployment altyapısı
 - Private Web kaynak kodları
 - Runtime yapılandırmaları
 - .env dosyaları
@@ -78,7 +78,7 @@ Bu public sürüm aşağıdaki bileşenleri içermez:
 - Arşivler
 - Özel Git geçmişi
 
-Bu sürüm hiçbir uzak cihaz çalıştırma, Hermes başlatma veya Worker iletişimi gerçekleştirmez.
+Bu sürüm, yalnız source/reference olarak Hermes Worker kodu ve placeholder-only WSL kurulum rehberi içerir. Gerçek server adresi, IP, token, API anahtarı, runtime environment, Docker image veya kullanıcı verisi içermez. Bu repository tek başına uzak cihaz çalıştırma, Hermes başlatma veya production Worker iletişimi gerçekleştirecek şekilde yapılandırılmamıştır.
 
 ---
 

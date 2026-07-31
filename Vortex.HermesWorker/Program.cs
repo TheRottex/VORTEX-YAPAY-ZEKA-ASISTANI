@@ -6,18 +6,21 @@ using System.Text.Json;
 using Vortex.Shared;
 
 var config = WorkerConfig.FromEnvironment(args);
+WorkerLog.Initialize(config.DataRoot);
 using var stopping = new CancellationTokenSource();
 Console.CancelKeyPress += (_, e) => { e.Cancel = true; stopping.Cancel(); };
 using var http = new HttpClient { BaseAddress = new Uri(config.ServerBaseUrl.TrimEnd('/') + "/"), Timeout = TimeSpan.FromSeconds(90) };
 var runtime = new HermesRuntime(config);
-Console.WriteLine($"Vortex Hermes Worker started. WorkerId={config.WorkerId}; Server={config.ServerBaseUrl}");
+WorkerLog.Info($"Vortex Hermes Worker started. WorkerId={config.WorkerId}; Server={config.ServerBaseUrl}");
 
 while (!stopping.IsCancellationRequested)
 {
     try
     {
         var readiness = runtime.GetReadiness();
-        await SendAsync(HttpMethod.Post, "api/worker/heartbeat", new WorkerHeartbeatRequest(readiness.HermesReady, readiness.ModelReady, readiness.StorageHealthy, readiness.Message), config, stopping.Token);
+        var heartbeat = await SendAsync(HttpMethod.Post, "api/worker/heartbeat", new WorkerHeartbeatRequest(readiness.HermesReady, readiness.ModelReady, readiness.StorageHealthy, readiness.Message), config, stopping.Token);
+        heartbeat.EnsureSuccessStatusCode();
+        WorkerLog.Info($"Worker heartbeat accepted. ready={readiness.IsReady}; hermesReady={readiness.HermesReady}; modelReady={readiness.ModelReady}; storageHealthy={readiness.StorageHealthy}; message={readiness.Message ?? "none"}");
         if (!readiness.IsReady)
         {
             await Task.Delay(TimeSpan.FromSeconds(config.IdlePollSeconds), stopping.Token);
@@ -32,13 +35,17 @@ while (!stopping.IsCancellationRequested)
         }
         claim.EnsureSuccessStatusCode();
         var job = await claim.Content.ReadFromJsonAsync<WorkerJobLeaseDto>(WorkerJson.Options, stopping.Token) ?? throw new InvalidOperationException("Server boş iş döndürdü.");
-        await SendAsync(HttpMethod.Post, $"api/worker/jobs/{job.JobId}/heartbeat", new { }, config, stopping.Token);
+        WorkerLog.Info($"Worker claimed job {job.JobId}; attempt={job.AttemptCount}/{job.MaxAttempts}; maxRunSeconds={job.MaxRunSeconds}");
+        (await SendAsync(HttpMethod.Post, $"api/worker/jobs/{job.JobId}/heartbeat", new { }, config, stopping.Token)).EnsureSuccessStatusCode();
         using var jobHeartbeat = CancellationTokenSource.CreateLinkedTokenSource(stopping.Token);
         var heartbeatTask = HeartbeatDuringRunAsync(job.JobId, config, jobHeartbeat.Token);
         var result = await runtime.RunAsync(job, stopping.Token);
         await jobHeartbeat.CancelAsync();
-        try { await heartbeatTask; } catch (OperationCanceledException) { }
-        await SendAsync(HttpMethod.Post, $"api/worker/jobs/{job.JobId}/complete", result, config, stopping.Token);
+        try { await heartbeatTask; }
+        catch (OperationCanceledException) { }
+        catch (Exception ex) { WorkerLog.Error($"Worker job heartbeat failed for {job.JobId}", ex); }
+        (await SendAsync(HttpMethod.Post, $"api/worker/jobs/{job.JobId}/complete", result, config, stopping.Token)).EnsureSuccessStatusCode();
+        WorkerLog.Info($"Worker completed job {job.JobId}; succeeded={result.Succeeded}; errorCode={result.ErrorCode ?? "none"}");
     }
     catch (OperationCanceledException) when (stopping.IsCancellationRequested)
     {
@@ -46,7 +53,7 @@ while (!stopping.IsCancellationRequested)
     }
     catch (Exception ex)
     {
-        Console.Error.WriteLine($"Worker loop failed: {ex.GetType().Name}: {ex.Message}");
+        WorkerLog.Error("Worker loop failed", ex);
         await Task.Delay(TimeSpan.FromSeconds(config.ErrorDelaySeconds), stopping.Token);
     }
 }
@@ -219,7 +226,7 @@ public sealed class HermesRuntime(WorkerConfig config)
             }
             if (process.ExitCode != 0)
             {
-                Console.Error.WriteLine($"Hermes failed for job {job.JobId}; stderr length={stderr.Text.Length}");
+                WorkerLog.Error($"Hermes failed for job {job.JobId}; stderr length={stderr.Text.Length}");
                 return CompleteFailure(config.IsDockerExecutionMode ? "DockerHermesProcessFailed" : "HermesProcessFailed", true, job, SafeMeasure(workspace.RootPath));
             }
             var finalUsage = SafeMeasure(workspace.RootPath);
@@ -956,6 +963,38 @@ public sealed record WorkerConfig(string ServerBaseUrl, string WorkerId, string 
         return value.Equals("1", StringComparison.OrdinalIgnoreCase)
             || value.Equals("yes", StringComparison.OrdinalIgnoreCase)
             || value.Equals("on", StringComparison.OrdinalIgnoreCase);
+    }
+}
+
+public static class WorkerLog
+{
+    private static readonly object Gate = new();
+    private static string? _path;
+
+    public static void Initialize(string dataRoot)
+    {
+        var directory = Path.Combine(dataRoot, "logs");
+        Directory.CreateDirectory(directory);
+        _path = Path.Combine(directory, "worker.log");
+    }
+
+    public static void Info(string message) => Write("INFO", message, null);
+    public static void Error(string message, Exception? exception = null) => Write("ERROR", message, exception);
+
+    private static void Write(string level, string message, Exception? exception)
+    {
+        var line = $"{DateTimeOffset.UtcNow:O} [{level}] {message}";
+        if (exception is not null) line += $" | {exception.GetType().Name}: {exception.Message}";
+        Console.WriteLine(line);
+        if (string.IsNullOrWhiteSpace(_path)) return;
+        try
+        {
+            lock (Gate) File.AppendAllText(_path, line + Environment.NewLine, Encoding.UTF8);
+        }
+        catch
+        {
+            // Logging must not interrupt queued job processing.
+        }
     }
 }
 

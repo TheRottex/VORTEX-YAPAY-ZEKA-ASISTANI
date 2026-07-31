@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vortex Hermes Worker — WSL Kurulum ve Kurtarma Rehberi</title>
+  <style>
+    :root{--ink:#17212b;--paper:#f6f8f5;--panel:#fff;--rule:#d7ded7;--muted:#5d6970;--blue:#155e75;--cyan:#0891b2;--gold:#b45309;--red:#b42318;--green:#166534;--code:#10232c;--code-ink:#e7f3f0;--shadow:0 14px 45px #10232c16}
+    *{box-sizing:border-box} html{scroll-behavior:smooth} body{margin:0;color:var(--ink);background:linear-gradient(135deg,#eef3ef 0,#f8f9f5 45%,#e8f0ee 100%);font:16px/1.65 ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+    .shell{max-width:1240px;margin:auto;padding:28px}.mast{display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:36px;padding:48px 0 36px;border-bottom:3px solid var(--ink)}
+    .eyebrow,.tag{font:700 12px/1 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.1em;text-transform:uppercase}.eyebrow{color:var(--blue)}h1,h2,h3{line-height:1.08;margin:0 0 16px}h1{font-family:Georgia,"Times New Roman",serif;font-size:clamp(2.5rem,6vw,5.1rem);letter-spacing:-.05em;max-width:920px}h2{font-size:1.8rem;margin-top:4px}h3{font-size:1.1rem}.intro{font-size:1.1rem;max-width:760px;color:#33434b}.signal{align-self:end;border-left:4px solid var(--cyan);padding:12px 0 12px 16px;color:var(--muted)}
+    .layout{display:grid;grid-template-columns:245px minmax(0,1fr);gap:36px;margin-top:34px}.toc{position:sticky;top:18px;align-self:start}.toc a{display:block;color:#39505a;text-decoration:none;padding:8px 0;border-bottom:1px solid var(--rule);font-size:.9rem}.toc a:hover{color:var(--blue)}
+    main{min-width:0}.phase{background:var(--panel);border:1px solid var(--rule);box-shadow:var(--shadow);margin-bottom:28px;padding:clamp(22px,4vw,44px)}.phase-head{display:flex;align-items:center;gap:16px;border-bottom:1px solid var(--rule);padding-bottom:20px;margin-bottom:27px}.num{width:45px;height:45px;display:grid;place-items:center;border-radius:50%;background:var(--ink);color:#fff;font:700 18px Georgia,serif;flex:0 0 auto}
+    .note{border-left:4px solid var(--blue);background:#edf7f8;padding:14px 16px;margin:18px 0}.warn{border-color:var(--gold);background:#fff7e8}.danger{border-color:var(--red);background:#fff1f0}.ok{border-color:var(--green);background:#eff9f0}.tag{display:inline-block;background:#e2eceb;color:#24414b;padding:5px 7px;border-radius:3px;margin-bottom:7px}ul,ol{padding-left:22px}.steps>li{margin:18px 0}code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.9em;background:#eaf0ee;padding:2px 4px;border-radius:3px}pre{position:relative;margin:10px 0 22px;padding:18px;overflow:auto;background:var(--code);color:var(--code-ink);border-radius:6px;border:1px solid #29434d;font:13px/1.55 ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre-wrap}pre::before{content:"WSL terminal";position:absolute;right:12px;top:8px;color:#8eb8b6;font-size:10px;letter-spacing:.08em;text-transform:uppercase}.tree{color:#d4e8a9}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.card{border:1px solid var(--rule);padding:18px;background:#fcfdfb}.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font-size:.92rem}th,td{text-align:left;vertical-align:top;padding:12px;border-bottom:1px solid var(--rule)}th{color:var(--blue);font-size:.75rem;text-transform:uppercase;letter-spacing:.06em}.flow{font:700 14px ui-monospace,SFMono-Regular,Consolas,monospace;background:#eaf3f2;padding:16px;border-left:4px solid var(--cyan);overflow:auto}.checklist li{list-style:"□  ";padding-left:5px;margin:8px 0}.footer{padding:20px 0 50px;color:var(--muted);font-size:.87rem}@media(max-width:850px){.mast,.layout{grid-template-columns:1fr}.toc{position:static;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0}.grid{grid-template-columns:1fr}.shell{padding:18px}.mast{padding-top:25px}}
+  </style>
+</head>
+<body>
+<div class="shell">
+<header class="mast">
+  <div><div class="eyebrow">Vortex / private laptop runtime</div><h1>Hermes Worker<br>kurulum defteri.</h1><p class="intro">Mevcut WSL worker'ını güvenli pakete çevir. Yeni laptopta sıfırdan kur. Docker, Hermes, CLIProxy ve Vortex.Server zincirini kanıtla. Kullanıcı verisi ve gizli anahtarlar hiçbir aşamada taşınmaz.</p></div>
+  <div class="signal"><strong>Tek iş:</strong><br>Desktop mesajı Worker'a ulaşır; Worker izole kullanıcı workspace'inde Hermes çalıştırır; sonuç Server üzerinden Desktop'a döner.</div>
+</header>
+<div class="layout">
+<nav class="toc"><a href="#before">Önce: güvenlik</a><a href="#phase1">1 — Taşınabilir paket</a><a href="#phase2">2 — Yeni laptop kurulumu</a><a href="#phase3">3 — Server bağlantısı</a><a href="#diagnostics">Arıza teşhisi</a><a href="#rotate">Anahtar rotasyonu</a></nav>
+<main>
+<section id="before" class="phase"><div class="phase-head"><div class="num">!</div><div><div class="eyebrow">Başlamadan</div><h2>Gizli değerleri arşive koyma.</h2></div></div>
+<div class="danger note"><strong>Kural:</strong> Gerçek <code>VORTEX_WORKER_TOKEN</code>, <code>OPENAI_API_KEY</code>, CLIProxy anahtarı, <code>worker.env</code>, <code>hermes.env</code>, <code>hermes-config.yaml</code>, <code>data/</code>, kullanıcı workspace'i, log ve database taşıma paketine girmez. Yeni laptopta secret'lar güvenli kanaldan yeniden yazılır.</div>
+<p>Bu rehber yalnız private worker paketi içindir. Public GitHub release içine Worker source, WSL runtime, secret, Docker state veya kullanıcı verisi koyma.</p>
+</section>
+
+<section id="phase1" class="phase"><div class="phase-head"><div class="num">1</div><div><div class="eyebrow">Mevcut laptop / WSL</div><h2>Taşınabilir Worker paketi üret.</h2></div></div>
+<p>Hedef: başka laptopta Worker build edebilmek. Paket yalnız kaynak, Docker recipe ve örnek ayar taşır. Mevcut runtime state taşımaz.</p>
+<h3>1.1 Mevcut worker runtime haritası</h3>
+<pre class="tree">/home/&lt;user&gt;/vortex-worker/
+├── current/                         # aktif publish release (symlink olabilir)
+├── releases/&lt;release-id&gt;/           # eski/yeni publish release'ler
+├── secrets/                         # TAŞIMA: yasak
+│   ├── worker.env                   # Worker token + server adresi
+│   ├── hermes.env                   # API/CLIProxy ayarları
+│   └── hermes-config.yaml           # provider/model config
+└── data/                            # TAŞIMA: yasak
+    ├── logs/worker.log
+    └── users/&lt;server-workspace-id&gt;/
+        ├── workspace/               # kullanıcı çalışma alanı
+        ├── hermes-home/
+        ├── memory/  automations/  artifacts/  temp/  metadata/</pre>
+<h3>1.2 WSL içinde güvenli allowlist staging</h3>
+<p>Vortex kaynak checkout yolunu kendine göre değiştir. Örnek: Windows diskteki repository.</p>
+<pre>export SOURCE="/mnt/c/Users/&lt;WINDOWS_KULLANICISI&gt;/Desktop/&lt;VORTEX_KAYNAK_KLASORU&gt;"
+export KIT="$HOME/vortex-worker-kit"
+rm -rf "$KIT"
+mkdir -p "$KIT/source" "$KIT/image"
+
+cp -a "$SOURCE/Vortex.HermesWorker" "$KIT/source/"
+cp -a "$SOURCE/Vortex.Shared" "$KIT/source/"
+cp -a "$SOURCE/docker/hermes" "$KIT/source/"
+cp -a "$SOURCE/deploy/wsl" "$KIT/source/"
+cp -a "$SOURCE/Directory.Build.props" "$KIT/source/"
+find "$SOURCE" -maxdepth 1 -name '*.sln' -type f -exec cp -a {} "$KIT/source/" \;
+find "$SOURCE" -maxdepth 1 -name 'NuGet*.config' -type f -exec cp -a {} "$KIT/source/" \;</pre>
+<div class="note"><strong>Bu komuttan sonra oluşan klasör:</strong> <code>/home/&lt;LINUX_KULLANICISI&gt;/vortex-worker-kit/</code>. İçinde taşınabilir Worker kaynakları <code>source/</code>, Docker image export'u için boş <code>image/</code> klasörü bulunur. Henüz taşınacak tek arşiv oluşmaz.</div>
+<h3>1.3 Arşivden yasak dosyaları doğrula</h3>
+<pre>find "$KIT" -type f \( -iname '*.env' -o -iname '*secret*' -o -iname '*token*' -o -iname '*.db' -o -iname '*.sqlite*' -o -path '*/data/*' -o -path '*/logs/*' \) -print
+# Beklenen: çıktı yok.</pre>
+<div class="warn note"><strong>Not:</strong> Bu ad kontrolüdür. <code>grep</code> ile gerçek key değerini ekrana/loga basma. Secret taraması şüpheli dosya bulursa dosyayı paketten çıkar; anahtar değerini paylaşma.</div>
+<h3>1.4 Docker image opsiyonları</h3>
+<div class="grid"><div class="card"><span class="tag">Daha hızlı kurulum</span><h3>Image export et</h3><pre>docker save vortex-hermes:0.18.2 \
+  -o "$KIT/image/vortex-hermes-0.18.2.tar"
+sha256sum "$KIT/image/vortex-hermes-0.18.2.tar" \
+  &gt; "$KIT/image/vortex-hermes-0.18.2.tar.sha256"</pre><p><strong>Oluşan dosyalar:</strong> <code>/home/&lt;LINUX_KULLANICISI&gt;/vortex-worker-kit/image/vortex-hermes-0.18.2.tar</code> ve aynı klasörde <code>.tar.sha256</code>.</p></div><div class="card"><span class="tag">Daha küçük paket</span><h3>Yeni laptopta yeniden build</h3><pre>cd "$KIT/source"
+docker build -t vortex-hermes:0.18.2 \
+  -f docker/hermes/Dockerfile .</pre></div></div>
+<h3>1.5 TAR ve ZIP üret</h3>
+<pre>cd "$HOME"
+tar -czf vortex-worker-kit.tar.gz vortex-worker-kit
+sha256sum vortex-worker-kit.tar.gz &gt; vortex-worker-kit.tar.gz.sha256
+
+# Windows'ta açmak için ZIP de üret.
+zip -r vortex-worker-kit.zip vortex-worker-kit
+sha256sum vortex-worker-kit.zip &gt; vortex-worker-kit.zip.sha256</pre>
+<div class="ok note"><strong>Taşınacak dosyalar burada oluşur:</strong><br><code>/home/&lt;LINUX_KULLANICISI&gt;/vortex-worker-kit.tar.gz</code><br><code>/home/&lt;LINUX_KULLANICISI&gt;/vortex-worker-kit.tar.gz.sha256</code><br><code>/home/&lt;LINUX_KULLANICISI&gt;/vortex-worker-kit.zip</code><br><code>/home/&lt;LINUX_KULLANICISI&gt;/vortex-worker-kit.zip.sha256</code></div>
+<p>Arşivi şifreli disk/kurumsal güvenli depolama ile taşı. Archive hash'i yeni laptopta karşılaştır.</p>
+<h3>1.6 ZIP yoksa ve Windows'tan dosyayı alma</h3>
+<p><code>zip: command not found</code> görürsen TAR paketin yine geçerlidir. ZIP checksum dosyası oluşmuşsa ama ZIP oluşmamışsa önce yanlış checksum dosyasını sil, sonra ZIP aracını kur.</p>
+<pre>rm -f "$HOME/vortex-worker-kit.zip.sha256"
+sudo apt update
+sudo apt install -y zip
+
+cd ~
+zip -r vortex-worker-kit.zip vortex-worker-kit
+sha256sum vortex-worker-kit.zip &gt; vortex-worker-kit.zip.sha256</pre>
+<div class="note"><strong>Dizin notu:</strong> <code>~</code>, Linux kullanıcının home dizinidir: <code>/home/&lt;LINUX_KULLANICISI&gt;</code>. Home'a dönmek için <code>cd ~</code> yaz; <code>cd home</code> yazma.</div>
+<p>Windows Explorer'dan arşivleri almak için önce Yönetici olmayan PowerShell'de dağıtım adını bul:</p>
+<pre>wsl -l -v</pre>
+<p>Sonra Explorer adres çubuğuna şu yolu gir:</p>
+<pre>\\wsl$\&lt;DAGITIM_ADI&gt;\home\&lt;LINUX_KULLANICISI&gt;\</pre>
+<p>Örnek: <code>\\wsl$\Ubuntu\home\&lt;LINUX_KULLANICISI&gt;\</code>. Burada <code>vortex-worker-kit.tar.gz</code>, checksum dosyaları ve oluşturduysan ZIP dosyası bulunur.</p>
+</section>
+
+<section id="phase2" class="phase"><div class="phase-head"><div class="num">2</div><div><div class="eyebrow">Yeni laptop</div><h2>Sıfırdan WSL, Docker, Hermes testleri.</h2></div></div>
+<h3>2.1 Windows: WSL2 ve Ubuntu</h3>
+<pre># Yönetici PowerShell
+wsl --install -d Ubuntu
+wsl --update
+wsl --status</pre>
+<p>Windows yeniden başlatma isterse tamamla. Ubuntu ilk açılışında Linux kullanıcı adı/parola oluştur.</p>
+<h3>2.2 Docker Desktop</h3>
+<ol class="steps"><li>Docker Desktop'ı resmi Docker kaynağından kur.</li><li>Settings → Resources → WSL Integration altında Ubuntu dağıtımını etkinleştir.</li><li>WSL terminalinde doğrula:</li></ol>
+<pre>docker version
+docker run --rm hello-world</pre>
+<h3>2.3 Build için .NET 8 SDK</h3>
+<pre>sudo apt update
+sudo apt install -y dotnet-sdk-8.0 git zip curl ca-certificates
+
+dotnet --info</pre>
+<h3>2.4 Worker kit aç ve publish et</h3>
+<pre>mkdir -p "$HOME/vortex-worker"
+cd "$HOME/vortex-worker"
+# Harici disk/Windows Downloads konumunu kendi dosyana göre değiştir.
+tar -xzf /mnt/c/Users/&lt;WINDOWS_KULLANICISI&gt;/Downloads/vortex-worker-kit.tar.gz
+mv vortex-worker-kit/source source
+
+cd "$HOME/vortex-worker/source"
+dotnet publish Vortex.HermesWorker/Vortex.HermesWorker.csproj \
+  -c Release -o "$HOME/vortex-worker/releases/$(date -u +%Y%m%dT%H%M%SZ)"
+ln -sfn "$(readlink -f "$HOME/vortex-worker/releases/$(ls -1 "$HOME/vortex-worker/releases" | tail -n1)")" "$HOME/vortex-worker/current"</pre>
+<div class="note">Daha güvenli alternatif: publish dizin adını önce değişkene al, sonra <code>ln -sfn</code> ile <code>current</code> linkini o release'e yönlendir. Bu link service'in çalıştırdığı sürümdür.</div>
+<h3>2.5 Docker image yükle veya build et</h3>
+<pre># Image archive taşıdıysan:
+docker load -i "$HOME/vortex-worker/vortex-worker-kit/image/vortex-hermes-0.18.2.tar"
+
+# Archive yoksa source içinden build et:
+cd "$HOME/vortex-worker/source"
+docker build -t vortex-hermes:0.18.2 -f docker/hermes/Dockerfile .
+
+docker image inspect vortex-hermes:0.18.2 >/dev/null && echo IMAGE_OK
+docker run --rm vortex-hermes:0.18.2 --help</pre>
+<h3>2.6 CLIProxy erişimi ve Hermes one-shot</h3>
+<p>Worker Docker container içinden WSL-local CLIProxy'ye <code>host.docker.internal</code> üzerinden ulaşır. CLIProxy önce kendi laptopunda hazır olmalı; public LAN portu açma.</p>
+<pre># CLIProxy portunu kendi kurulumuna göre değiştir.
+docker run --rm --entrypoint sh \
+  --add-host host.docker.internal:host-gateway \
+  vortex-hermes:0.18.2 -lc \
+  'python3 -c "import urllib.request; print(urllib.request.urlopen(\"http://host.docker.internal:20128/api/v1\", timeout=10).status)"'
+# Beklenen: 200</pre>
+<p>Sonra private Hermes config ve env hazır olduktan sonra kısa model testi çalıştır. Bu test ayrı geçici workspace kullanır; kullanıcı workspace'ine bağlanmaz.</p>
+<pre>mkdir -p /tmp/vortex-hermes-test/workspace /tmp/vortex-hermes-test/hermes-home
+cp "$HOME/vortex-worker/secrets/hermes-config.yaml" /tmp/vortex-hermes-test/hermes-home/config.yaml
+cp "$HOME/vortex-worker/secrets/hermes.env" /tmp/vortex-hermes-test/hermes-home/.env
+
+timeout 70s docker run --rm --network bridge \
+  --add-host host.docker.internal:host-gateway \
+  --workdir /workspace --memory 512m --memory-swap 512m --pids-limit 128 \
+  --mount type=bind,source=/tmp/vortex-hermes-test/workspace,target=/workspace \
+  --mount type=bind,source=/tmp/vortex-hermes-test/hermes-home,target=/home/hermes/.hermes \
+  --env HERMES_HOME=/home/hermes/.hermes --env HOME=/home/hermes \
+  vortex-hermes:0.18.2 -z "Selam. Tek cümle Türkçe yanıt ver."
+echo "Çıkış kodu: $?"</pre>
+<div class="table-wrap"><table><thead><tr><th>Belirti</th><th>Anlam</th><th>Düzeltme</th></tr></thead><tbody><tr><td><code>docker: command not found</code></td><td>Docker Desktop/WSL entegrasyonu kapalı.</td><td>Docker Desktop WSL Integration aç; WSL terminalini yeniden başlat.</td></tr><tr><td><code>IMAGE_YOK</code></td><td>Hermes image yüklenmemiş.</td><td><code>docker load</code> veya <code>docker build</code> çalıştır.</td></tr><tr><td>CLIProxy testinde bağlantı hatası</td><td>Host gateway/CLIProxy listener yok.</td><td>CLIProxy'yi WSL laptopta başlat; doğru port kullan; container testini tekrar et.</td></tr><tr><td><code>401</code> veya API key hatası</td><td>Provider anahtarı yanlış/geçersiz.</td><td>Private <code>hermes.env</code> içindeki anahtarı güvenli kaynaktan yenile.</td></tr><tr><td><code>Çıkış kodu: 124</code></td><td>70 saniyede model yanıtı yok.</td><td>CLIProxy/model sağlayıcı latency ve model ayarını kontrol et.</td></tr></tbody></table></div>
+</section>
+
+<section id="phase3" class="phase"><div class="phase-head"><div class="num">3</div><div><div class="eyebrow">Server bağlantısı</div><h2>Kuyruğa bağlan. Kullanıcıları ayır.</h2></div></div>
+<div class="flow">Desktop → Vortex.Server <code>/api/agent/chat</code> → AgentJobs queue → Laptop Worker → izole Docker Hermes → Server sonucu kaydeder → Desktop SSE sonucu gösterir</div>
+<h3>3.1 Private environment dosyaları</h3>
+<p>Bu dosyalar <strong>archive'a girmez</strong>. İzinleri yalnız Linux kullanıcısına açık olmalı.</p>
+<pre>mkdir -p "$HOME/vortex-worker/secrets" "$HOME/vortex-worker/data"
+chmod 700 "$HOME/vortex-worker/secrets"
+
+cat &gt; "$HOME/vortex-worker/secrets/worker.env" &lt;&lt;'EOF'
+VORTEX_SERVER_URL=https://&lt;SUNUCU_ALANI&gt;
+VORTEX_WORKER_ID=laptop-hermes-worker
+VORTEX_WORKER_TOKEN=&lt;SERVER_WORKER_SERVICE_TOKEN_ILE_AYNI_DEGER&gt;
+VORTEX_WORKER_DATA=/home/&lt;LINUX_KULLANICISI&gt;/vortex-worker/data
+VORTEX_HERMES_EXECUTION_MODE=docker
+VORTEX_DOCKER_HERMES_IMAGE=vortex-hermes:0.18.2
+HERMES_CONFIG_SEED_PATH=/home/&lt;LINUX_KULLANICISI&gt;/vortex-worker/secrets/hermes-config.yaml
+HERMES_ENV_SEED_PATH=/home/&lt;LINUX_KULLANICISI&gt;/vortex-worker/secrets/hermes.env
+VORTEX_DOCKER_MEMORY_LIMIT_MB=512
+VORTEX_DOCKER_MEMORY_SWAP_LIMIT_MB=512
+VORTEX_DOCKER_PIDS_LIMIT=128
+VORTEX_REQUIRE_PRIVATE_SERVER_ENDPOINT=false
+EOF
+chmod 600 "$HOME/vortex-worker/secrets/worker.env"</pre>
+<p><code>hermes.env</code> yalnız gerekli provider/CLIProxy ayarlarını içerir. <code>hermes-config.yaml</code> model/provider config'tir. Gerçek değerleri komut geçmişine veya sohbet ekranına yapıştırma.</p>
+<h3>3.2 Server ile zorunlu eşleşme</h3>
+<ul><li><code>VORTEX_WORKER_ID</code> = Server <code>Worker:AllowedWorkerId</code></li><li><code>VORTEX_WORKER_TOKEN</code> = Server <code>Worker:ServiceToken</code></li><li><code>VORTEX_SERVER_URL</code> = public HTTPS veya doğrulanmış private/Tailscale Server endpoint</li></ul>
+<p>İlk iki değer farklıysa Worker heartbeat isteği <code>401 Unauthorized</code> alır. Server Worker'ı offline görür, işler <code>Queued</code> kalır.</p>
+<h3>3.3 Repository source ile WSL Worker aynı mı?</h3>
+<div class="warn note"><strong>Varsayma:</strong> Repository içindeki <code>Vortex.HermesWorker/</code> source kodudur. WSL'de çalışan Worker ise publish edilmiş binary'dir: <code>/home/&lt;LINUX_KULLANICISI&gt;/vortex-worker/current/Vortex.HermesWorker.dll</code>. <code>current</code> bir symbolic link'tir ve bir <code>releases/&lt;RELEASE_ID&gt;/</code> klasörünü gösterir. Source sonradan değiştiyse, eski release otomatik güncellenmez.</div>
+<pre>WORKER_HOME="$HOME/vortex-worker"
+readlink -f "$WORKER_HOME/current"
+sha256sum "$WORKER_HOME/current/Vortex.HermesWorker.dll"
+systemctl --user status vortex-hermes-worker --no-pager -l
+systemctl --user cat vortex-hermes-worker</pre>
+<p>Bu komutlar aktif release'i, binary hash'ini ve service'in gerçekten hangi DLL'i çalıştırdığını gösterir. Source ile binary'nin kesin aynı olduğunun güvenilir kanıtı: aynı source commit'ten yeni publish üretmek ve <code>current</code> linkini bu release'e taşımaktır.</p>
+<h3>3.4 Source'tan güvenli güncelleme ve rollback</h3>
+<p>Repository içinde secret-free update helper bulunur: <code>Vortex.HermesWorker/publish-wsl-worker.sh</code>. Script token/API key yazmaz veya göstermez; yalnız private <code>worker.env</code> varlığını ve <code>600</code> iznini kontrol eder, yeni release publish eder, <code>current</code> linkini değiştirir ve service'i restart eder.</p>
+<pre># Worker kit/source bulunduğun yere göre değiştir.
+cd "$HOME/vortex-worker/source"
+chmod +x Vortex.HermesWorker/publish-wsl-worker.sh
+./Vortex.HermesWorker/publish-wsl-worker.sh "$PWD"
+
+readlink -f "$HOME/vortex-worker/current"
+systemctl --user status vortex-hermes-worker --no-pager -l
+curl -s https://&lt;SUNUCU_ALANI&gt;/health/worker</pre>
+<p>Eski release silinmez. Yeni release sorun çıkarırsa önce eski hedefi listele, sonra linki eski release'e döndür:</p>
+<pre>ls -1dt "$HOME/vortex-worker/releases"/*
+ln -sfn "$HOME/vortex-worker/releases/&lt;ESKI_RELEASE_ID&gt;" "$HOME/vortex-worker/current"
+systemctl --user restart vortex-hermes-worker
+readlink -f "$HOME/vortex-worker/current"</pre>
+<h3>3.5 systemd --user service</h3>
+<pre>mkdir -p "$HOME/.config/systemd/user"
+cat &gt; "$HOME/.config/systemd/user/vortex-hermes-worker.service" &lt;&lt;'EOF'
+[Unit]
+Description=Vortex Hermes Worker
+After=network-online.target docker.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/vortex-worker/current
+EnvironmentFile=%h/vortex-worker/secrets/worker.env
+ExecStart=/usr/bin/dotnet %h/vortex-worker/current/Vortex.HermesWorker.dll
+Restart=on-failure
+RestartSec=10
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=default.target
+EOF
+
+systemctl --user daemon-reload
+systemctl --user enable --now vortex-hermes-worker
+systemctl --user status vortex-hermes-worker --no-pager -l</pre>
+<p>WSL kapansa bile user service devam etsin istiyorsan:</p>
+<pre>loginctl enable-linger "$USER"</pre>
+<h3>3.6 Public paylaşım güvenlik sınırı</h3>
+<div class="danger note"><strong>Public release içine asla koyma:</strong> gerçek server alan adı/IP adresi, <code>VORTEX_WORKER_TOKEN</code>, <code>Worker:ServiceToken</code>, <code>OPENAI_API_KEY</code>, CLIProxy key, <code>worker.env</code>, <code>hermes.env</code>, <code>hermes-config.yaml</code>, <code>data/</code>, logs, Docker container/volume state, database veya kullanıcı workspace'i.</div>
+<p>Public-safe içerik yalnız source, Dockerfile, örnek <code>worker.env</code> template'i, secret-free <code>vortex-hermes-worker.service.example</code>, <code>publish-wsl-worker.sh</code> ve bu rehberdir. Örneklerde yalnız <code>&lt;SUNUCU_ALANI&gt;</code>, <code>&lt;TOKEN&gt;</code> gibi placeholder kullan. Bununla public rehber, Server IP/hostname veya hangi API sağlayıcısının kullanıldığı bilgisini sızdırmaz.</p>
+<h3>3.7 Server readiness kanıtı</h3>
+<pre>curl -s https://&lt;SUNUCU_ALANI&gt;/health/worker</pre>
+<pre>{
+  "serverHealthy": true,
+  "workerId": "laptop-hermes-worker",
+  "workerConnected": true,
+  "hermesReady": true,
+  "modelReady": true,
+  "storageHealthy": true,
+  "status": "ModelReady"
+}</pre>
+<div class="ok note"><strong>Bu beş durum true ise:</strong> Server Worker heartbeat alıyor; Docker/Hermes readiness ve data root sağlıklı. Sonra Desktop'tan <code>Selam</code> gönder; akış <code>Queued → Claimed → Running → Completed</code> olmalı.</div>
+<h3>3.8 Her kullanıcı ayrı workspace</h3>
+<p>Server her Agent Job için server-owned <code>WorkspaceId</code> gönderir. Worker yalnız aşağıdaki alanda workspace üretir:</p>
+<pre>/home/&lt;LINUX_KULLANICISI&gt;/vortex-worker/data/users/&lt;SERVER_WORKSPACE_ID&gt;/
+├── workspace/
+├── hermes-home/
+├── memory/
+├── automations/
+├── artifacts/
+├── temp/
+└── metadata/</pre>
+<p>Bir kullanıcının workspace'i diğer kullanıcının ID'siyle paylaşılmaz. Worker path doğrulaması yapar; workspace dışına çıkmayı, reparse/symlink kaçışlarını ve uyumsuz policy'yi reddeder. Bu dizinler data/state kabul edilir: taşınmaz, public release'e girmez.</p>
+</section>
+
+<section id="diagnostics" class="phase"><div class="phase-head"><div class="num">?</div><div><div class="eyebrow">Canlı arıza teşhisi</div><h2>Hangi halkada koptuğunu gör.</h2></div></div>
+<h3>Worker service logu</h3><pre>journalctl --user -u vortex-hermes-worker -f</pre>
+<p>Güncel Worker release'inde kalıcı log da data root altında tutulur:</p><pre>tail -f "$HOME/vortex-worker/data/logs/worker.log"</pre>
+<h3>Server health</h3><pre>curl -s https://&lt;SUNUCU_ALANI&gt;/health/worker</pre>
+<div class="table-wrap"><table><thead><tr><th>Health sonucu</th><th>Kök alan</th><th>İlk kontrol</th></tr></thead><tbody><tr><td><code>workerConnected: false</code></td><td>Worker kapalı, network veya HMAC token/ID yanlış.</td><td><code>systemctl --user status ...</code>, <code>journalctl</code>, server URL curl.</td></tr><tr><td><code>hermesReady: false</code></td><td>Docker/image/Hermes probe sorunu.</td><td><code>docker version</code>, <code>docker image inspect</code>.</td></tr><tr><td><code>modelReady: false</code></td><td>CLIProxy veya provider model hazırlığı yok.</td><td>Container içinden CLIProxy HTTP testi.</td></tr><tr><td><code>storageHealthy: false</code></td><td>Data root yok veya disk alanı yetersiz.</td><td><code>ls -ld "$HOME/vortex-worker/data"; df -h</code>.</td></tr><tr><td>Desktop: Hermes işi tamamlanamadı</td><td>Worker job aldı, Hermes başarısız tamamladı.</td><td>Worker journal/log; Docker one-shot ve CLIProxy testleri.</td></tr></tbody></table></div>
+<h3>Owner/Admin server diagnostics</h3>
+<p>Owner, Administrator veya Support token ile aktif Worker ve terminal olmayan jobları okuyabilirsin:</p>
+<pre>curl -s -H "Authorization: Bearer &lt;OWNER_ADMIN_SUPPORT_TOKEN&gt;" \
+  https://&lt;SUNUCU_ALANI&gt;/api/diagnostics/worker</pre>
+<p>Bu endpoint Worker heartbeat/readiness ile <code>Queued</code>, <code>Claimed</code>, <code>Running</code> jobların deneme sayısını, son heartbeat'ini ve hata kodunu verir. Tokenı shell history'de bırakmamak için güvenli local secret mekanizması kullan.</p>
+</section>
+
+<section id="rotate" class="phase"><div class="phase-head"><div class="num">↻</div><div><div class="eyebrow">Olay sonrası</div><h2>Token veya API key görünür olduysa rotate et.</h2></div></div>
+<ul class="checklist"><li>Server <code>Worker:ServiceToken</code> için yeni güçlü değer üret.</li><li>Yeni değeri yalnız private <code>worker.env</code> içine yaz.</li><li><code>VORTEX_WORKER_TOKEN</code> değiştiyse service restart et.</li><li>Görünen provider/CLIProxy API anahtarını sağlayıcı panelinden iptal et ve yenisini üret.</li><li>Yeni API key'i yalnız <code>hermes.env</code> gibi private secret dosyasına yaz.</li><li>Eski chat/terminal/paste kayıtlarını secret deposu sayma; geçmişteki değeri geçersiz bırak.</li></ul>
+<pre>systemctl --user daemon-reload
+systemctl --user restart vortex-hermes-worker
+curl -s https://&lt;SUNUCU_ALANI&gt;/health/worker</pre>
+</section>
+</main></div>
+<footer class="footer">Kaynak referansları: <code>Vortex.HermesWorker/Program.cs</code>, <code>deploy/wsl/README.md</code>, <code>deploy/wsl/vortex-hermes-worker.env.example</code>, <code>Vortex.Server/Program.cs</code>. Rehber komutlarındaki <code>&lt;...&gt;</code> placeholder'larını gerçek değerle yalnız yerel private dosyada değiştir.</footer>
+</div>
+</body>
+</html>
