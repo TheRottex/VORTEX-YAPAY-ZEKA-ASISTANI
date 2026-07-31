@@ -1,29 +1,95 @@
-# Public Scope
+# Public Sürüm Kapsamı
 
-## Included
+## Dahil Edilenler
 
-- .NET 8 public contracts, minimal ASP.NET Core API, SQLite schema, and parameterized persistence helpers.
-- Password hashing, signed bearer-token validation, and AES-GCM helper code.
-- Owner-scoped device registration, allowlisted device-action planning/queueing, guarded claim/completion, and owner job-status retrieval.
-- Public tests, governance documents, and the exact positive file list in [PUBLIC_EXPORT_MANIFEST.json](PUBLIC_EXPORT_MANIFEST.json).
-- Mandated top-level layout README files. `Vortex.Desktop` contains four explicitly copied Desktop service examples and six explicitly copied static orb UI assets, all outside the public solution compilation paths.
+Bu public sürüm aşağıdaki bileşenleri içerir:
 
-## Supported capabilities
+- .NET 8 tabanlı public sözleşmeler (Contracts)
+- Minimal ASP.NET Core API
+- SQLite veritabanı şeması
+- Parametreli veri erişim yardımcıları
+- PBKDF2-SHA256 parola karmalama altyapısı
+- JWT Bearer Token doğrulama sistemi
+- AES-GCM şifreleme yardımcıları
+- Sahip (Owner) bazlı cihaz kayıt sistemi
+- Güvenli cihaz işlem planlama ve kuyruk sistemi
+- Yetkilendirilmiş görev talep (Claim) ve tamamlama mekanizması
+- Sahibe ait görev durumlarının görüntülenmesi
+- Public test projeleri
+- Dokümantasyon
+- PUBLIC_EXPORT_MANIFEST.json içerisinde belirtilen public dosya listesi
 
-- Password registration/login and authenticated profile lookup.
-- Registration, login, device registration, action queueing, job claim, and job completion each have a fixed-window direct-peer IP limit. No forwarded-header value is read or trusted, rejected requests queue nothing, and rejection is generic HTTP 429.
-- A compatible device client can claim its own queued job and submit persisted completion fields only: device credentials, success, code, message, and timeline.
-- Completion semantics are explicit: malformed, unknown, or revoked device credentials return 401; a valid device with no job for itself or a pending job returns 404; a same-device claimed job completes once and returns 200; a repeat after completion returns the original stored data and cannot overwrite it; another state guard failure returns 409.
-- A queued job's `DryRun` value remains server-owned and is returned in owner-visible status; completion cannot change it.
+Ayrıca üst dizin yapısı GitHub public sürümü için düzenlenmiştir.
 
-## Excluded and unsupported
+---
 
-- Desktop and LocalAgent source/runtime. The isolated `Vortex.Desktop/` references are not a runtime, are not compiled by the public solution, and cannot execute a device action.
-- `Vortex.HermesWorker`, Hermes profiles/workspaces, Worker contracts/tokens/queues/tests, Tailscale, Docker, deployment, Admin, and private Web source.
-- Runtime configuration, `.env` files, secrets, OAuth values, JWT keys, device tokens, database files, logs, user data, build output, binaries, archives, checksums, package assets, private storage, and operational history.
-- The separate private source tree and its Git history.
-- No public route starts Hermes, contacts a Worker, configures Tailscale, or claims execution success.
+## Desteklenen Özellikler
 
-## Rules
+Bu sürüm aşağıdaki yetenekleri desteklemektedir:
 
-This public edition uses positive inclusion. A file is included only when its exact path appears in `docs/PUBLIC_EXPORT_MANIFEST.json`; wildcards are not permitted. The manifest must equal `git ls-files` in both directions. `.gitignore` is not a publication boundary by itself.
+- Kullanıcı kayıt ve giriş sistemi
+- JWT ile kimlik doğrulama
+- Profil görüntüleme
+- Cihaz kaydı
+- Cihaz yönetimi
+- Güvenli görev planlama
+- Görev kuyruğu
+- Görev talep etme (Claim)
+- Görev tamamlama
+- DryRun desteği
+- IP tabanlı hız sınırlandırma (Rate Limiting)
+
+Görev tamamlama sırasında yalnızca aşağıdaki bilgiler kayıt altına alınır:
+
+- Cihaz bilgileri
+- İşlem sonucu
+- Durum kodu
+- Mesaj
+- Zaman çizelgesi
+
+DryRun değeri yalnızca sunucu tarafından yönetilir ve istemci tarafından değiştirilemez.
+
+---
+
+## Dahil Edilmeyenler
+
+Bu public sürüm aşağıdaki bileşenleri içermez:
+
+- Desktop uygulaması
+- LocalAgent
+- Worker servisleri
+- Hermes
+- Admin Paneli
+- Docker
+- Tailscale
+- Deployment altyapısı
+- Private Web kaynak kodları
+- Runtime yapılandırmaları
+- .env dosyaları
+- API anahtarları
+- OAuth bilgileri
+- JWT gizli anahtarları
+- Device Token verileri
+- Veritabanları
+- Günlük (Log) dosyaları
+- Kullanıcı verileri
+- Binary dosyalar
+- Build çıktıları
+- Arşivler
+- Özel Git geçmişi
+
+Bu sürüm hiçbir uzak cihaz çalıştırma, Hermes başlatma veya Worker iletişimi gerçekleştirmez.
+
+---
+
+## Yayın Kuralları
+
+Bu public sürüm yalnızca pozitif dosya listesi mantığı ile hazırlanmıştır.
+
+Yalnızca `docs/PUBLIC_EXPORT_MANIFEST.json` dosyasında belirtilen yollar public sürüme dahildir.
+
+Wildcard kullanılamaz.
+
+Manifest ile `git ls-files` çıktısı birebir eşleşmelidir.
+
+`.gitignore` dosyası tek başına yayın sınırı olarak kabul edilmez.

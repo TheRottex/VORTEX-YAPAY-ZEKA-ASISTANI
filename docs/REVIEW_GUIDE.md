@@ -1,31 +1,197 @@
-# Review Guide
+# İnceleme ve Doğrulama Rehberi
 
-## Confirm the exact export scope
+Bu belge, Vortex Yapay Zeka Asistanı Public sürümünün yayınlanmadan önce nasıl incelenmesi ve doğrulanması gerektiğini açıklar.
 
-1. Parse `docs/PUBLIC_EXPORT_MANIFEST.json`; reject duplicate, rooted, traversal, wildcard, forbidden, or private paths.
-2. Compare its `includedPaths` with `git ls-files -z` in both directions. The hygiene test must report manifest paths missing from Git and Git-tracked paths absent from the manifest. A fresh bootstrap must fail until the owner stages every listed source file; there is no bootstrap bypass, and reviewers must not stage or otherwise mutate Git state as part of this check.
-3. Under `Release`, permit only `Release/v1.0.1.md` and reject operational, artifact, checksum, private-storage, and manual-upload material. Reject Desktop, LocalAgent, Worker, Hermes, Tailscale, Docker, deploy, Admin, private Web, runtime settings, secrets, archives, databases, logs, private local paths, and build output.
-4. Confirm no project reference resolves outside this repository.
+---
 
-## Inspect security and persistence properties
+# Public Dışa Aktarım Kapsamını Doğrulama
 
-- Token creation requires a signing key of at least 32 bytes.
-- Token validation rejects malformed input, unsupported `alg`/`typ`, invalid signature, expiry, wrong issuer/audience, and malformed subject.
-- Password hashes use PBKDF2-SHA256 with random salts and fixed-time comparison.
-- Device tokens are salted hashes with fixed-time comparison.
-- Queue requests require owner device membership, allowlisted tools, bounded arguments, and required confirmation.
-- A completion request contains only device credentials, success, code, message, and timeline; it cannot submit dry-run, command, output, or technical details.
-- Completion status mapping is verified through the actual route: invalid credentials 401; absent/pending/non-device job 404; claimed completion 200; repeated completion returns original data without overwrite; other state guard failure 409.
-- Queued `DryRun` persists as server-owned data and is not altered by completion.
-- Registration, login, device registration, action queueing, job claim, and job completion each use a separate built-in fixed-window limiter keyed only by `HttpContext.Connection.RemoteIpAddress`. It must have a zero queue and generic 429 rejection; forwarded headers must not be read, trusted, or enabled.
-- Rate-limit tests use fresh server hosts, prove each targeted route reaches 429 only after the limit, prove ten valid action queues are accepted before the generic empty 429 rejects the eleventh, prove policies are isolated, and prove changing `X-Forwarded-For` cannot bypass a limit.
+## 1. Public Manifest Dosyasını Doğrulayın
 
-## Verify locally
+`docs/PUBLIC_EXPORT_MANIFEST.json` dosyasını inceleyin.
+
+Aşağıdaki durumlarda doğrulamayı başarısız kabul edin:
+
+- Aynı dosyanın birden fazla kez listelenmesi
+- Kök dizin (rooted) yollar
+- Dizin dışına çıkan (`../`) yollar
+- Wildcard (`*`) kullanımı
+- Yasaklı yollar
+- Private dosya yolları
+
+---
+
+## 2. Manifest ile Git Dosyalarını Karşılaştırın
+
+Manifest içerisindeki `includedPaths` listesi ile
+
+```
+git ls-files -z
+```
+
+çıktısını iki yönlü karşılaştırın.
+
+Doğrulama aşağıdaki durumları raporlamalıdır:
+
+- Manifestte bulunup Git'te olmayan dosyalar
+- Git'te bulunup Manifestte olmayan dosyalar
+
+İlk kurulum sırasında (bootstrap) bütün public kaynak dosyaları Git'e eklenene kadar bu kontrolün başarısız olması beklenir.
+
+İnceleme yapan kişi Git durumunu değiştirmemeli, dosya eklememeli veya stage işlemi gerçekleştirmemelidir.
+
+---
+
+## 3. Release İçeriğini Kontrol Edin
+
+Release klasöründe yalnızca aşağıdaki dosya bulunmalıdır:
+
+```
+Release/v1.0.1.md
+```
+
+Aşağıdaki içerikler kesinlikle bulunmamalıdır:
+
+- Operasyon dosyaları
+- Build çıktıları
+- Binary dosyalar
+- Checksum dosyaları
+- Private depolama içerikleri
+- Manuel yüklenmiş dosyalar
+- Desktop
+- LocalAgent
+- Worker
+- Hermes
+- Tailscale
+- Docker
+- Deployment
+- Admin
+- Private Web
+- Runtime yapılandırmaları
+- Gizli bilgiler
+- Veritabanları
+- Log dosyaları
+- Arşiv dosyaları
+
+---
+
+## 4. Proje Referanslarını Kontrol Edin
+
+Hiçbir proje referansı repository dışındaki bir dizine işaret etmemelidir.
+
+---
+
+# Güvenlik Doğrulamaları
+
+Aşağıdaki güvenlik özelliklerini doğrulayın.
+
+## Kimlik Doğrulama
+
+- JWT imzalama anahtarı en az 32 byte olmalıdır.
+- Geçersiz JWT reddedilmelidir.
+- Yanlış imza reddedilmelidir.
+- Süresi dolmuş Token reddedilmelidir.
+- Yanlış Issuer reddedilmelidir.
+- Yanlış Audience reddedilmelidir.
+
+---
+
+## Parola Güvenliği
+
+Parolalar
+
+- PBKDF2-SHA256
+- Rastgele Salt
+- Sabit süreli karşılaştırma
+
+kullanılarak doğrulanmalıdır.
+
+---
+
+## Device Token Güvenliği
+
+Device Token'lar
+
+- Salt ile hashlenmeli
+- Sabit süreli karşılaştırma kullanılmalıdır.
+
+---
+
+## Görev Kuyruğu
+
+Görev kuyruğu aşağıdaki kuralları sağlamalıdır.
+
+- Cihaz sahibine ait olmalıdır.
+- Yalnızca izin verilen araçlar çalıştırılabilir.
+- Parametre sınırları uygulanmalıdır.
+- Onay gerektiren işlemler kullanıcı onayı olmadan kuyruğa alınmamalıdır.
+
+---
+
+## Görev Tamamlama
+
+Tamamlama isteği yalnızca aşağıdaki alanları içermelidir.
+
+- DeviceId
+- DeviceToken
+- Success
+- Code
+- Message
+- Timeline
+
+Aşağıdaki alanlar istemci tarafından gönderilemez.
+
+- DryRun
+- Command
+- Output
+- Teknik detaylar
+
+---
+
+## HTTP Durum Kodları
+
+Doğrulanması gereken davranışlar:
+
+| Durum | HTTP |
+|-------|------|
+| Geçersiz Device | 401 |
+| Bekleyen veya bulunamayan görev | 404 |
+| Başarılı tamamlama | 200 |
+| Tekrarlanan tamamlama | 200 |
+| Diğer durum hataları | 409 |
+
+---
+
+## Rate Limiting
+
+Her endpoint ayrı hız sınırına sahip olmalıdır.
+
+Kontroller:
+
+- IP adresi yalnızca `RemoteIpAddress` üzerinden alınmalıdır.
+- Forwarded Header kullanılmamalıdır.
+- Kuyruk uzunluğu sıfır olmalıdır.
+- Limit aşımında Generic HTTP 429 dönmelidir.
+- X-Forwarded-For ile limit aşılmamalıdır.
+
+---
+
+# Yerel Doğrulama
 
 ```powershell
 dotnet restore VortexAI.Public.sln
+
 dotnet build VortexAI.Public.sln -c Release --no-restore
+
 dotnet test Vortex.Public.Tests/Vortex.Public.Tests.csproj -c Release --no-build
 ```
 
-The hygiene test is expected to fail before the owner stages the manifest-listed public files, because it enforces exact `git ls-files -z` equality. It must name both directional differences and must not change the Git index. Treat all results as revision-specific evidence. This documentation is not proof of a release, deployment, desktop action, or package artifact.
+Repository hijyen testi, public kaynak dosyalarının tamamı Git'e eklenene kadar başarısız olmalıdır.
+
+Bu davranış normaldir.
+
+Test hiçbir zaman Git durumunu değiştirmemeli ve yalnızca mevcut repository durumunu doğrulamalıdır.
+
+Bu doküman yalnızca public kaynak kodunun doğrulanmasını açıklar.
+
+Bir sürümün yayınlandığını, dağıtıldığını veya üretim ortamına alındığını kanıtlamaz.

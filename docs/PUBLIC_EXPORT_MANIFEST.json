@@ -43,11 +43,14 @@
     "VortexAI.Public.sln",
     "docs/ARCHITECTURE.md",
     "docs/CONFIGURATION.md",
+    "docs/INTERFACE.md",
     "docs/PUBLIC_EXPORT_MANIFEST.json",
     "docs/PUBLIC_SCOPE.md",
     "docs/REVIEW_GUIDE.md",
     "docs/VERIFICATION.md",
     "docs/WORK_PROGRESS.md",
+    "docs/images/interface/vortex-interface-overview.png",
+    "docs/images/setup/vortex-setup-overview.png",
     "docs/screenshots/README.md"
   ],
   "exclusions": [
