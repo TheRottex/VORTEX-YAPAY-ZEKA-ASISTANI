@@ -44,19 +44,19 @@ VORTEX ekibi; TEKNOFEST başvuru sürecinde sağladıkları başvuru rehberliği
 Bu destek; ekibin proje fikrini olgunlaştırmasına, teknik çalışmalarını planlı yürütmesine ve yenilikçi çözümler geliştirmesine değerli katkı sundu. Gençlerin teknoloji üretimine katılımını güçlendiren bu yaklaşım, VORTEX'in sürdürülebilir ve toplumsal fayda odaklı hedeflerini desteklemektedir.
 
 <p align="center">
-  <img src="docs/images/partners/vortexlogo.png" alt="VORTEX logosu" height="92" />
+  <img src="images/partners/vortexlogo.png" alt="VORTEX logosu" height="92" />
   &nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="docs/images/partners/teknomerlogo.png" alt="Teknomer logosu" height="92" />
+  <img src="images/partners/teknomerlogo.png" alt="Teknomer logosu" height="92" />
 </p>
 
 ## Arayüz Galerisi
 
 <p align="center">
   <picture>
-    <img src="docs/images/interface/vortex-interface-overview.png" alt="Vortex arayüz genel görünümü" width="48%" />
+    <img src="images/interface/vortex-interface-overview.png" alt="Vortex arayüz genel görünümü" width="48%" />
   </picture>
   <picture>
-    <img src="docs/images/interface/raw/vortex-orb.png" alt="Vortex djital arayüz maskotu Vortex ORB seseli komutlar alıgladığında ana ekrana gelir." width="48%" />
+    <img src="images/interface/raw/vortex-orb.png" alt="Vortex djital arayüz maskotu Vortex ORB seseli komutlar alıgladığında ana ekrana gelir." width="48%" />
   </picture>
 </p>
 
