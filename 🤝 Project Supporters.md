@@ -104,6 +104,6 @@ VORTEX ekibi için destek yalnızca kısa süreli bir katkı değildir. Gençler
 
 💙 **Keçiören Belediyesi ve Teknomer'e, genç yazılım geliştiricilere verdikleri değer ve VORTEX projesine sundukları katkılar için teşekkür ederiz.**
 
-[← Ana sayfaya dön](../README.md)
+[← Ana sayfaya dön](README.md)
 
 </div>
