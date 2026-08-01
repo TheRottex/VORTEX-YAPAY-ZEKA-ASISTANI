@@ -199,7 +199,7 @@ flowchart LR
 
 <td align="center" valign="top" width="33%">
   <img
-    src="images/interface/okan.jpeg"
+    src="images/interface/okan.png"
     alt="Okan Özbay fotoğrafı"
     width="190"
     height="190"
