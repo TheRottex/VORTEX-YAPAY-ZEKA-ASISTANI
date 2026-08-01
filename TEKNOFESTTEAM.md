@@ -4,7 +4,7 @@
 
 **Teknolojiyi yalnızca tüketmeyen; proje geliştiren, öğrenen ve topluma değer katmayı hedefleyen genç bir yazılım takımı.**
 
-[← Ana README](../README.md) · [Dokümantasyon Merkezi](README.md) · [Destekçiler](SUPPORTERS.md)
+[← Ana README](README.md) · [Dokümantasyon Merkezi](README.md) · [Destekçiler](SUPPORTERS.md)
 
 </div>
 
