@@ -10,6 +10,10 @@
 
 ---
 
+> [!IMPORTANT]
+> Bu belge iki farklı kapsamı birlikte anlatır: **VORTEX takımının 2024 yılında başlayan kuruluş ve proje yolculuğu** ile **VORTEX Yapay Zekâ Asistanı'nın teknik geliştirme sahipliği**.  
+> Takım geçmişi ortak öğrenme ve proje deneyimlerini ifade eder; VORTEX Yapay Zekâ Asistanı'nın uygulama geliştirme süreci ise Okan Özbay tarafından tek başına yürütülmüştür.
+
 ## İçindekiler
 
 - [VORTEX nedir?](#vortex-nedir)
@@ -21,6 +25,7 @@
 - [Çalışma yaklaşımı](#çalışma-yaklaşımı)
 - [Proje değerleri](#proje-değerleri)
 - [Teknik çalışma alanları](#teknik-çalışma-alanları)
+- [Gelecek perspektifi](#gelecek-perspektifi)
 - [Hedefler](#hedefler)
 - [Katkılarıyla](#katkılarıyla)
 - [İlgili belgeler](#ilgili-belgeler)
@@ -29,52 +34,50 @@
 
 ## VORTEX nedir?
 
-VORTEX; yerli yazılım üretimi, güvenli kullanıcı deneyimi ve sürdürülebilir teknoloji çözümleri odağında geliştirilen bir yapay zekâ asistanı projesidir.
+VORTEX, 2024 yılında **Yenimahalle Şehit Mehmet Şengül Mesleki ve Teknik Anadolu Lisesi** öğrencilerinin yazılım geliştirme ilgisini ortak bir üretim kültürüne dönüştürme amacıyla ortaya çıkan bir proje takımıdır.
 
-Proje; yalnızca çalışan bir uygulama ortaya koymayı değil, aynı zamanda aşağıdaki alanlarda ölçülebilir ve belgelenebilir bir geliştirme süreci oluşturmayı hedefler:
+Kuruluş yaklaşımı yalnızca bir yarışmaya proje hazırlamak değildir. VORTEX;
 
-- gerçek bir problemi tanımlamak,
-- ihtiyaca uygun sistem mimarisi tasarlamak,
-- güvenli yazılım geliştirme ilkelerini uygulamak,
-- kullanıcıya anlaşılır ve erişilebilir bir deneyim sunmak,
-- geliştirilen çözümü test etmek,
-- kurulum ve kullanım süreçlerini belgelemek,
-- public ve private sistem sınırlarını açık biçimde ayırmak,
-- öğrenilen teknik bilgileri sürdürülebilir bir projeye dönüştürmek.
+- yazılım alanında teknik yetkinlik kazanmayı,
+- gerçek dünya problemlerine sürdürülebilir çözümler üretmeyi,
+- yerli ve açık kaynak yazılım ekosistemine katkı sağlamayı,
+- disiplinli çalışma ve dokümantasyon kültürü oluşturmayı,
+- teknolojiyi yalnızca tüketen değil, üreten bir gençlik anlayışını temsil etmeyi
 
-VORTEX Yapay Zekâ Asistanı bu yaklaşımın güvenli, kullanıcı odaklı ve geliştirilebilir bir ürün çalışmasına dönüşmüş hâlidir.
+hedefler.
+
+Takımın teknik ilgi alanları arasında C# ve .NET, Python, Java, Pardus, Linux ve Windows tabanlı uygulamalar; sistem mimarisi, backend geliştirme, oyun ve sanallaştırma projeleri ile UI/UX tasarımı bulunmaktadır.
+
+VORTEX Yapay Zekâ Asistanı, bu uzun vadeli üretim yaklaşımının güvenli, kullanıcı odaklı ve geliştirilebilir bir yazılım ürününe dönüşmüş hâlidir.
 
 ---
 
 ## Projenin hikâyesi
 
-VORTEX'in temelleri, yazılım ve uygulama geliştirmeye duyulan ilginin gerçek bir ürün ortaya çıkarma hedefiyle birleşmesiyle atıldı.
+VORTEX'in temelleri 2024 yılında, lise döneminde yazılım ve uygulama geliştirmeye duyulan ortak ilginin bir takım fikrine dönüşmesiyle atıldı. Okul bünyesindeki **TÜBİTAK 4006 Bilim Fuarı** deneyimi; araştırma yapma, proje fikrini olgunlaştırma, teknik sorunları çözme ve ortaya çıkan çalışmayı sunma konusunda önemli bir başlangıç oldu.
 
-TÜBİTAK 4006 Bilim Fuarı gibi önceki proje deneyimleri; araştırma yapma, fikir geliştirme, teknik engelleri aşma ve ortaya çıkan çalışmayı sunma konusunda önemli bir başlangıç oluşturdu. Bu deneyim zamanla daha kapsamlı bir yazılım projesine dönüştü.
+Bu yolculuğun ilk önemli çalışmalarından biri **Yeşil Adımlar** projesiydi. Anaokulu ve ilkokul düzeyindeki çocuklara çevre bilinci kazandırmayı amaçlayan bu eğitici oyun/sanallaştırma projesi; etkileşimli senaryolar aracılığıyla erken yaşta sürdürülebilirlik farkındalığı oluşturmayı hedefledi.
 
-VORTEX sürecinde yalnızca kod yazmaya değil, bir yazılım ürününün tamamını oluşturan şu alanlara da odaklanıldı:
+Bir diğer çalışma olan **Güvenli Gün**, iş kazalarının önlenmesine yönelik farkındalık oluşturmak amacıyla tasarlanan senaryo tabanlı bir oyun/sanallaştırma projesiydi. Kullanıcıya riskli durumları simüle ederek doğru davranış biçimlerini öğretmeyi amaçladı.
 
-- problem ve ihtiyaç analizi,
-- teknik araştırma,
-- sistem ve servis mimarisi,
-- backend geliştirme,
-- kullanıcı arayüzü,
-- kullanıcı deneyimi,
-- performans ve hata yönetimi,
-- test ve doğrulama,
-- güvenlik sınırları,
+Bu projeler;
+
+- problem analizi,
 - proje planlama,
-- sürüm yönetimi,
-- teknik dokümantasyon,
-- GitHub ve açık kaynak yayın disiplini.
+- uygulama geliştirme,
+- kullanıcıya uygun içerik tasarımı,
+- toplumsal fayda odaklı düşünme,
+- sunum ve dokümantasyon
 
-VORTEX, tek seferlik bir uygulama denemesi olarak değil; öğrenme, üretme ve sürekli iyileştirme yolculuğu olarak ele alınmaktadır.
+alanlarında önemli deneyimler kazandırdı.
+
+VORTEX'in proje kültürü **“Ekip Çalışması · Azim · Disiplin · Asla Pes Etmeme”** anlayışı üzerine kurulmuştur. Her çalışma, daha büyük ve etkili projelere giden yolda bir öğrenme basamağı olarak görülmektedir.
 
 ---
 
 ## Geliştirme sahipliği
 
-VORTEX Yapay Zekâ Asistanı'nın teknik geliştirme sorumluluğu **Okan Özbay** tarafından tek başına üstlenilmiştir.
+Takımın geçmişinde ortak proje ve öğrenme deneyimleri bulunmakla birlikte, **VORTEX Yapay Zekâ Asistanı'nın teknik geliştirme süreci Okan Özbay tarafından tek başına yürütülmüştür.**
 
 Aşağıdaki çalışmalar Okan Özbay tarafından yürütülmüştür:
 
@@ -92,9 +95,8 @@ Aşağıdaki çalışmalar Okan Özbay tarafından yürütülmüştür:
 - kurulum ve operasyon rehberlerinin hazırlanması,
 - GitHub repository ve sürüm dokümantasyonunun yönetilmesi.
 
-> [!CAUTION]
-> Projenin danışmanları ve destekçileri değerlidir; ancak **uygulamanın kod geliştirme sahipliği yalnızca Okan Özbay'a aittir**.
-> Belge, sunum ve tanıtım metinlerinde bu ayrım korunmalıdır.
+> [!NOTE]
+> Takım geçmişi, danışmanlık ve destek katkıları projenin gelişim yolculuğunun parçalarıdır. Teknik geliştirme sahipliği belirtilirken uygulamanın kodlama, mimari, test ve dokümantasyon çalışmalarının Okan Özbay tarafından yürütüldüğü açıkça korunmalıdır.
 
 ```mermaid
 flowchart LR
@@ -160,7 +162,7 @@ TEKNOFEST yolculuğu yalnızca bir yarışma başvurusundan ibaret değildir. Bu
   <h3>Erdal</h3>
   <strong>Proje Destekçisi</strong><br>
   <strong>Süreç Desteği</strong><br><br>
-  Projeye destek sağlamıştır.
+  Proje destekçisi olarak yer almıştır.
 </td>
 </tr>
 </table>
@@ -171,7 +173,7 @@ TEKNOFEST yolculuğu yalnızca bir yarışma başvurusundan ibaret değildir. Bu
 | --- | --- | ---: | --- |
 | **Okan Özbay** | Proje sahibi, takım kaptanı ve tek geliştirici | **Evet — uygulamanın tamamı** | Mimari, yazılım, arayüz, test, güvenlik, dokümantasyon ve proje yönetimi |
 | **Hüseyin Keçeli** | Danışman öğretmen | Hayır | Eğitimsel rehberlik, planlama ve danışmanlık |
-| **Erdal** | Proje destekçisi | Hayır | Projeye destek |
+| **Erdal** | Proje destekçisi | Hayır | Proje desteği |
 
 ---
 
@@ -206,9 +208,7 @@ Hüseyin Keçeli'nin katkıları:
 
 ### Proje desteği
 
-Erdal'ın katkıları:
-
-- projeye destek sağlanması.
+Erdal, projede **proje destekçisi** olarak yer almıştır. Bu belgede, doğrulanmamış ayrıntılara yer verilmeden yalnızca bu rol belirtilmektedir.
 
 ---
 
@@ -260,6 +260,23 @@ VORTEX'in geliştirme modeli aşağıdaki adımları esas alır:
 
 ---
 
+## Gelecek perspektifi
+
+VORTEX, her projeyi daha kapsamlı çözümlere giden bir öğrenme basamağı olarak görmektedir. Gelecek dönemde özellikle:
+
+- Pardus ve Linux tabanlı çözümler,
+- açık kaynak ve yerli platformlar,
+- güvenli yapay zekâ entegrasyonları,
+- sistem ve servis yönetimi,
+- kullanıcı dostu masaüstü uygulamaları,
+- toplumsal fayda odaklı eğitim ve farkındalık projeleri
+
+üzerinde çalışılması hedeflenmektedir.
+
+Amaç yalnızca daha büyük projeler geliştirmek değil; teknik niteliği, güvenliği, kullanıcı deneyimini ve dokümantasyon kalitesini birlikte yükselten sürdürülebilir bir üretim yaklaşımı oluşturmaktır.
+
+---
+
 ## Hedefler
 
 ### Teknik hedefler
@@ -298,7 +315,7 @@ VORTEX projesi, TEKNOFEST başvuru ve geliştirme sürecinde sağlanan katkılar
 ### Bireysel katkılar
 
 - **Hüseyin Keçeli:** Danışman öğretmen olarak proje planlama, eğitimsel rehberlik ve sunum sürecine katkı sağlamıştır.
-- **Erdal:** Proje destekçisi olarak yer almıştır.
+- **Erdal:** Projede proje destekçisi olarak yer almıştır.
 
 ### Kurumsal katkılar
 
