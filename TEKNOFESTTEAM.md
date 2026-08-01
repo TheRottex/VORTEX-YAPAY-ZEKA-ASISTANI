@@ -21,9 +21,8 @@
 - [Geliştirme sahipliği](#geliştirme-sahipliği)
 - [TEKNOFEST 2026 yolculuğu](#teknofest-2026-yolculuğu)
 - [Proje ekibi ve destek rolleri](#proje-ekibi-ve-destek-rolleri)
-- [Görev ve sorumluluk modeli](#görev-ve-sorumluluk-modeli)
+- [Bu projedeki roller](#bu-projedeki-roller)
 - [Çalışma yaklaşımı](#çalışma-yaklaşımı)
-- [Proje değerleri](#proje-değerleri)
 - [Teknik çalışma alanları](#teknik-çalışma-alanları)
 - [Gelecek perspektifi](#gelecek-perspektifi)
 - [Hedefler](#hedefler)
@@ -96,7 +95,7 @@ Aşağıdaki çalışmalar Okan Özbay tarafından yürütülmüştür:
 - GitHub repository ve sürüm dokümantasyonunun yönetilmesi.
 
 > [!NOTE]
-> Takım geçmişi, danışmanlık ve destek katkıları projenin gelişim yolculuğunun parçalarıdır. Teknik geliştirme sahipliği belirtilirken uygulamanın kodlama, mimari, test ve dokümantasyon çalışmalarının Okan Özbay tarafından yürütüldüğü açıkça korunmalıdır.
+> Takım geçmişi, danışmanlık ve destek katkıları proje yolculuğunun parçalarıdır. VORTEX Yapay Zekâ Asistanı'nın teknik geliştirme süreci Okan Özbay tarafından yürütülmüştür.
 
 ```mermaid
 flowchart LR
@@ -148,40 +147,33 @@ TEKNOFEST yolculuğu yalnızca bir yarışma başvurusundan ibaret değildir. Bu
   <strong>Proje Sahibi</strong><br>
   <strong>Takım Kaptanı</strong><br>
   <strong>Tek Geliştirici</strong><br><br>
-  Uygulamanın mimarisi, kod geliştirme süreci, arayüzü, testleri, güvenlik çalışmaları ve dokümantasyonu.
+  Uygulamanın tasarımını, geliştirmesini, testlerini ve dokümantasyonunu yürüttü.
 </td>
 <td align="center" width="33%">
   <img src="images/team/huseyin-keceli.jpg" alt="Hüseyin Keçeli fotoğrafı" width="210"><br>
   <h3>Hüseyin Keçeli</h3>
   <strong>Danışman Öğretmen</strong><br>
   <strong>Bilişim Teknolojileri Alan Şefi</strong><br><br>
-  Proje hedeflerinin değerlendirilmesi, eğitimsel rehberlik, planlama ve süreç danışmanlığı.
+  Danışman öğretmen olarak proje sürecine rehberlik etti.
 </td>
 <td align="center" width="33%">
   <img src="images/team/erdal.jpg" alt="Erdal fotoğrafı" width="210"><br>
   <h3>Erdal</h3>
   <strong>Proje Destekçisi</strong><br>
   <strong>Süreç Desteği</strong><br><br>
-  Proje destekçisi olarak yer almıştır.
+  Projede destekçi olarak yer aldı.
 </td>
 </tr>
 </table>
 
-### Rol özeti
-
-| Kişi | Resmî rol | Kod geliştirme katkısı | Temel katkı alanı |
-| --- | --- | ---: | --- |
-| **Okan Özbay** | Proje sahibi, takım kaptanı ve tek geliştirici | **Evet — uygulamanın tamamı** | Mimari, yazılım, arayüz, test, güvenlik, dokümantasyon ve proje yönetimi |
-| **Hüseyin Keçeli** | Danışman öğretmen | Hayır | Eğitimsel rehberlik, planlama ve danışmanlık |
-| **Erdal** | Proje destekçisi | Hayır | Proje desteği |
 
 ---
 
-## Görev ve sorumluluk modeli
+## Bu projedeki roller
 
-### Proje sahipliği ve tek geliştirici sorumluluğu
+### Okan Özbay — proje sahibi ve geliştirici
 
-Okan Özbay'ın sorumlulukları:
+VORTEX Yapay Zekâ Asistanı'nın fikirden çalışan ürüne dönüşen teknik süreci Okan Özbay tarafından yürütülmüştür. Bu süreçte:
 
 - ürün vizyonunu ve teknik hedefleri belirlemek,
 - mimari kararları almak,
@@ -196,9 +188,9 @@ Okan Özbay'ın sorumlulukları:
 - teknik belgeleri hazırlamak,
 - TEKNOFEST için teknik sunum içeriğini oluşturmak.
 
-### Danışmanlık ve rehberlik
+### Hüseyin Keçeli — danışman öğretmen
 
-Hüseyin Keçeli'nin katkıları:
+Hüseyin Keçeli, danışman öğretmen olarak projenin eğitimsel ve planlama tarafında rehberlik sağlamıştır:
 
 - proje hedeflerinin eğitimsel açıdan değerlendirilmesi,
 - planlama sürecine rehberlik,
@@ -206,9 +198,9 @@ Hüseyin Keçeli'nin katkıları:
 - öğrencinin teknik ve kişisel gelişiminin desteklenmesi,
 - okul ve proje süreçleri arasında koordinasyona yardımcı olunması.
 
-### Proje desteği
+### Erdal — proje destekçisi
 
-Erdal, projede **proje destekçisi** olarak yer almıştır. Bu belgede, doğrulanmamış ayrıntılara yer verilmeden yalnızca bu rol belirtilmektedir.
+Erdal, projede **proje destekçisi** olarak yer almıştır.
 
 ---
 
@@ -226,15 +218,6 @@ VORTEX'in geliştirme modeli aşağıdaki adımları esas alır:
 8. **İyileştirme** — Bulgular ve geri bildirimler sonraki geliştirme döngüsüne aktarılır.
 
 ---
-
-## Proje değerleri
-
-| İlke | Projedeki karşılığı |
-| --- | --- |
-| **Azim** | Teknik engeller karşısında araştırmaya ve çözüm üretmeye devam etmek |
-| **Disiplin** | Planlı geliştirme, test, sürüm ve dokümantasyon sorumluluğu |
-| **Dürüstlük** | Geliştirme sahipliğiyle danışmanlık ve destek rollerini doğru ayırmak |
-| **Asla pes etmeme** | Hataları öğrenme fırsatı olarak değerlendirip projeyi geliştirmek |
 
 ---
 
