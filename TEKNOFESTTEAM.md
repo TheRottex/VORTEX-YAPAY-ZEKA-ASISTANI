@@ -10,20 +10,6 @@
 
 ---
 
-> [!IMPORTANT]
-> **VORTEX Yapay Zekâ Asistanı'nın yazılım geliştirme süreci Okan Özbay tarafından tek başına yürütülmüştür.**
-> Hüseyin Keçeli projede danışman öğretmen ve rehber olarak; Erdal ise proje destekçisi olarak yer almıştır.
-> Danışmanlık ve destek rolleri, uygulamanın kod geliştirme katkısı olarak gösterilmemelidir.
-
-> [!NOTE]
-> Bu belgeyi tamamlamak için üç kişiye ait gerçek fotoğraflar gereklidir. Aşağıdaki yer tutucu görselleri aynı dosya adlarını koruyarak gerçek fotoğraflarla değiştirin:
->
-> - `images/team/okan-ozbay.jpg`
-> - `images/team/huseyin-keceli.jpg`
-> - `images/team/erdal.jpg`
->
-> Erdal'ın soyadı ve resmî görev tanımı paylaşılmadığı için belgede yalnızca **Erdal** adı ve genel **proje destekçisi** rolü kullanılmıştır.
-
 ## İçindekiler
 
 - [VORTEX nedir?](#vortex-nedir)
@@ -117,7 +103,7 @@ flowchart LR
     E[Erdal<br/>Proje Destekçisi]
 
     H -->|Rehberlik ve danışmanlık| O
-    E -->|Süreç ve proje desteği| O
+    E -->|Proje desteği| O
     O -->|Tasarım, geliştirme, test ve dokümantasyon| V[VORTEX Yapay Zekâ Asistanı]
 ```
 
@@ -174,7 +160,7 @@ TEKNOFEST yolculuğu yalnızca bir yarışma başvurusundan ibaret değildir. Bu
   <h3>Erdal</h3>
   <strong>Proje Destekçisi</strong><br>
   <strong>Süreç Desteği</strong><br><br>
-  Proje sürecine destek, motivasyon ve ihtiyaç duyulan aşamalarda katkı.
+  Projeye destek sağlamıştır.
 </td>
 </tr>
 </table>
@@ -185,10 +171,7 @@ TEKNOFEST yolculuğu yalnızca bir yarışma başvurusundan ibaret değildir. Bu
 | --- | --- | ---: | --- |
 | **Okan Özbay** | Proje sahibi, takım kaptanı ve tek geliştirici | **Evet — uygulamanın tamamı** | Mimari, yazılım, arayüz, test, güvenlik, dokümantasyon ve proje yönetimi |
 | **Hüseyin Keçeli** | Danışman öğretmen | Hayır | Eğitimsel rehberlik, planlama ve danışmanlık |
-| **Erdal** | Proje destekçisi | Hayır | Süreç, motivasyon ve proje desteği |
-
-> [!TIP]
-> Erdal'ın soyadı, görev unvanı ve katkı açıklaması kesinleştiğinde yalnızca bu kart ve rol tablosu güncellenmelidir.
+| **Erdal** | Proje destekçisi | Hayır | Projeye destek |
 
 ---
 
@@ -225,10 +208,7 @@ Hüseyin Keçeli'nin katkıları:
 
 Erdal'ın katkıları:
 
-- proje sürecine destek sağlanması,
-- ihtiyaç duyulan aşamalarda yönlendirme ve motivasyon,
-- proje çalışmasının sürdürülebilirliğine katkı,
-- ilgili imkân ve bağlantılar konusunda destek.
+- projeye destek sağlanması.
 
 ---
 
@@ -318,7 +298,7 @@ VORTEX projesi, TEKNOFEST başvuru ve geliştirme sürecinde sağlanan katkılar
 ### Bireysel katkılar
 
 - **Hüseyin Keçeli:** Danışman öğretmen olarak proje planlama, eğitimsel rehberlik ve sunum sürecine katkı sağlamıştır.
-- **Erdal:** Proje destekçisi olarak sürecin ilerlemesine ve ihtiyaç duyulan aşamalardaki çalışmalara destek olmuştur.
+- **Erdal:** Proje destekçisi olarak yer almıştır.
 
 ### Kurumsal katkılar
 
