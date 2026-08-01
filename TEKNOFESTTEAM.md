@@ -197,21 +197,21 @@ flowchart LR
 <table>
 <tr>
 <td align="center" width="33%">
-  <img src="images/interface/okan.jpg" alt="Okan Özbay fotoğrafı" width="210"><br>
+  <img src="images/interface/okan.jpeg" alt="Okan Özbay fotoğrafı" width="210"><br>
   <h3>Okan Özbay</h3>
   <strong>Takım Kaptanı</strong><br>
   <strong>VORTEX Yapay Zekâ Asistanı Geliştiricisi</strong><br><br>
   Uygulamanın teknik tasarımını, geliştirmesini, testlerini ve dokümantasyonunu yürüttü.
 </td>
 <td align="center" width="33%">
-  <img src="images/interface/hüseyin hoca.jpg" alt="Hüseyin Keçeli fotoğrafı" width="210"><br>
+  <img src="images/interface/hüseyin hoca.png" alt="Hüseyin Keçeli fotoğrafı" width="210"><br>
   <h3>Hüseyin Keçeli</h3>
   <strong>Danışman Öğretmen</strong><br>
   <strong>Bilişim Teknolojileri Alan Şefi</strong><br><br>
   Proje sürecine danışman öğretmen olarak rehberlik etti.
 </td>
 <td align="center" width="33%">
-  <img src="images/interface/erdal.jpg" alt="Erdal fotoğrafı" width="210"><br>
+  <img src="images/interface/erdal.png" alt="Erdal fotoğrafı" width="210"><br>
   <h3>Erdal</h3>
   <strong>Proje Destekçisi</strong><br><br>
   Projede destekçi olarak yer aldı. Proje sürecinde ekibin yanında bulunarak çalışmalara destek verdi.
