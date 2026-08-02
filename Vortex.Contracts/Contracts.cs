@@ -85,3 +85,40 @@ public sealed record DeviceJobStatusResponse(
     bool? Success,
     bool DryRun,
     string[] Timeline);
+
+public enum AgentJobPriority { Low = 0, Normal = 10, High = 20 }
+public enum WorkerReadinessState { Connected, HermesReady, ModelReady, StorageDegraded, NotConfigured }
+
+public sealed record WorkerHeartbeatRequest(bool HermesReady, bool ModelReady, bool StorageHealthy, string? Message = null);
+public sealed record WorkerReadinessDto(string WorkerId, bool Authenticated, bool HermesReady, bool ModelReady, bool StorageHealthy, WorkerReadinessState State, DateTimeOffset ServerTime, string? Message = null);
+public sealed record WorkerClaimRequest(int MaxJobs = 1, int LeaseSeconds = 60);
+public sealed record WorkerJobLeaseDto(Guid JobId, Guid UserId, Guid AgentProfileId, Guid? ConversationId, string RequestId, string WorkspaceId, string HermesProfileName, string Input, AgentJobPriority Priority, DateTimeOffset LeaseExpiresAt, int AttemptCount, int MaxAttempts, int MaxRunSeconds, string FileAccessScope, long StorageQuotaBytes = 0, long StorageUsedBytes = 0, bool IsSubAgentEnabled = false, bool IsTerminalEnabled = false, bool IsSystemCommandEnabled = false, int RuntimeMemoryLimitMb = 512, int RuntimeIdleReleaseSeconds = 300, string? StoragePrefix = null);
+public sealed record WorkerCompleteJobRequest(bool Succeeded, string? Result, string? ErrorCode = null, bool Retryable = false, int InputTokens = 0, int OutputTokens = 0, long? StorageUsedBytes = null);
+public sealed record HermesActionProposal(string Kind, string ToolName, IReadOnlyDictionary<string, string> Arguments, string Status, string? Summary = null);
+public sealed record HermesToolCall(string ToolName, Dictionary<string, string> Arguments);
+public sealed record HermesWorkerPairRequest(string PairingCode, string? DisplayName = null);
+public sealed record HermesWorkerPairResponse(string WorkerId, string WorkerToken);
+public sealed record HermesWorkerStatusDto(string WorkerId, string DisplayName, DateTimeOffset CreatedAt, DateTimeOffset? LastSeenAt, bool HermesReady, bool ModelReady, bool StorageHealthy, bool Revoked);
+
+public static class SigningCanonical
+{
+    public static string Create(string method, string pathAndQuery, string timestamp, string nonce, string bodySha256)
+        => string.Join('\n', method.ToUpperInvariant(), pathAndQuery, timestamp, nonce, bodySha256);
+
+    public static string Hash(byte[] body) => Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(body)).ToLowerInvariant();
+
+    public static string Sign(string canonical, string secret)
+    {
+        using var hmac = new System.Security.Cryptography.HMACSHA256(System.Text.Encoding.UTF8.GetBytes(secret));
+        return Convert.ToHexString(hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(canonical))).ToLowerInvariant();
+    }
+}
+
+public static class PathSafety
+{
+    public static bool IsSafeRelativePath(string path)
+    {
+        if (string.IsNullOrWhiteSpace(path) || Path.IsPathRooted(path)) return false;
+        return !path.Replace('\\', '/').Split('/').Any(part => part is ".." or "" || part.Contains('\0'));
+    }
+}

@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\Vortex.Shared\Vortex.Shared.csproj" />
+    <ProjectReference Include="..\Vortex.Contracts\Vortex.Contracts.csproj" />
   </ItemGroup>
 
   <!-- Desktop ABI verification artifacts are generated payloads, not Worker source. -->

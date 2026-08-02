@@ -1,9 +1,10 @@
 using System.Diagnostics;
 using System.Net;
 using System.Net.Http.Json;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
-using Vortex.Shared;
+using Vortex.Contracts;
 
 var config = WorkerConfig.FromEnvironment(args);
 WorkerLog.Initialize(config.DataRoot);
@@ -99,17 +100,12 @@ public sealed class HermesRuntime(WorkerConfig config)
     public WorkerReadiness GetReadiness()
     {
         if (!WorkerConfig.IsValidHermesInputMode(config.HermesInputMode)) return new WorkerReadiness(false, false, Directory.Exists(config.DataRoot), "Hermes input mode must be 'args' or 'stdin'.");
-        if (!WorkerConfig.IsValidHermesExecutionMode(config.HermesExecutionMode)) return new WorkerReadiness(false, false, Directory.Exists(config.DataRoot), "Hermes execution mode must be 'process' or 'docker'.");
+        if (!config.IsDockerExecutionMode) return new WorkerReadiness(false, false, Directory.Exists(config.DataRoot), "DockerOnlyExecutionModeRequired");
         var storageHealthy = Directory.Exists(config.DataRoot);
-        if (config.IsDockerExecutionMode)
-        {
-            var docker = GetDockerReadiness();
-            if (!docker.IsReady) return new WorkerReadiness(false, false, storageHealthy, docker.Message);
-            if (string.IsNullOrWhiteSpace(config.DockerHermesImage) || !IsSafeDockerImage(config.DockerHermesImage)) return new WorkerReadiness(false, false, storageHealthy, "DockerHermesImageInvalid");
-            return new WorkerReadiness(true, true, storageHealthy, null);
-        }
-        var probe = GetProbeResult();
-        if (!probe.IsReady) return new WorkerReadiness(false, false, storageHealthy, probe.Message);
+        var docker = GetDockerReadiness();
+        if (!docker.IsReady) return new WorkerReadiness(false, false, storageHealthy, docker.Message);
+        if (string.IsNullOrWhiteSpace(config.DockerHermesImage) || !IsSafeDockerImage(config.DockerHermesImage)) return new WorkerReadiness(false, false, storageHealthy, "DockerHermesImageInvalid");
+        if (!HostIdentity.TryGetCurrent(out _, out _)) return new WorkerReadiness(false, false, storageHealthy, "DockerHostIdentityUnavailable");
         return new WorkerReadiness(true, true, storageHealthy, null);
     }
 
@@ -164,25 +160,17 @@ public sealed class HermesRuntime(WorkerConfig config)
             return CompleteFailure(ex.Message, false, job, null);
         }
 
+        var docker = GetDockerReadiness();
+        if (!docker.IsReady || string.IsNullOrWhiteSpace(docker.ResolvedDockerCli)) return CompleteFailure(docker.Message ?? "DockerUnavailable", true, job, initialUsage);
+
         ProcessStartInfo startInfo;
-        if (config.IsDockerExecutionMode)
+        try
         {
-            var docker = GetDockerReadiness();
-            if (!docker.IsReady || string.IsNullOrWhiteSpace(docker.ResolvedDockerCli)) return CompleteFailure(docker.Message ?? "DockerUnavailable", true, job, initialUsage);
-            try
-            {
-                startInfo = BuildDockerHermesStartInfo(config, job, workspace, docker.ResolvedDockerCli);
-            }
-            catch (InvalidOperationException ex)
-            {
-                return CompleteFailure(ex.Message, false, job, initialUsage);
-            }
+            startInfo = BuildDockerHermesStartInfo(config, job, workspace, docker.ResolvedDockerCli);
         }
-        else
+        catch (InvalidOperationException ex)
         {
-            var probe = GetProbeResult();
-            if (!probe.IsReady || string.IsNullOrWhiteSpace(probe.ResolvedCommand)) return CompleteFailure(probe.Message ?? "HermesUnavailable", true, job, initialUsage);
-            startInfo = BuildProcessHermesStartInfo(config, job, workspace, probe.ResolvedCommand);
+            return CompleteFailure(ex.Message, false, job, initialUsage);
         }
 
         using var process = new Process { StartInfo = startInfo };
@@ -458,8 +446,11 @@ public sealed class HermesRuntime(WorkerConfig config)
         };
         startInfo.ArgumentList.Add("run");
         startInfo.ArgumentList.Add("--rm");
+        if (!HostIdentity.TryGetCurrent(out var uid, out var gid)) throw new InvalidOperationException("DockerHostIdentityUnavailable");
         startInfo.ArgumentList.Add("--name");
         startInfo.ArgumentList.Add(BuildDockerContainerName(job));
+        startInfo.ArgumentList.Add("--user");
+        startInfo.ArgumentList.Add($"{uid}:{gid}");
         startInfo.ArgumentList.Add("--network");
         startInfo.ArgumentList.Add("bridge");
         startInfo.ArgumentList.Add("--add-host");
@@ -470,17 +461,17 @@ public sealed class HermesRuntime(WorkerConfig config)
         startInfo.ArgumentList.Add("--mount");
         startInfo.ArgumentList.Add($"type=bind,source={workspace.WorkspacePath},target=/workspace");
         startInfo.ArgumentList.Add("--mount");
-        startInfo.ArgumentList.Add($"type=bind,source={workspace.HermesHomePath},target=/home/hermes/.hermes");
+        startInfo.ArgumentList.Add($"type=bind,source={workspace.HermesHomePath},target=/vortex/hermes-home");
         ApplyPolicyEnvironment(startInfo, job, workspace);
-        startInfo.Environment["HERMES_HOME"] = "/home/hermes/.hermes";
-        startInfo.Environment["HOME"] = "/home/hermes";
-        startInfo.Environment["USERPROFILE"] = "/home/hermes";
+        startInfo.Environment["HERMES_HOME"] = "/vortex/hermes-home";
+        startInfo.Environment["HOME"] = "/vortex/hermes-home";
+        startInfo.Environment["USERPROFILE"] = "/vortex/hermes-home";
         startInfo.ArgumentList.Add("--env");
-        startInfo.ArgumentList.Add("HERMES_HOME=/home/hermes/.hermes");
+        startInfo.ArgumentList.Add("HERMES_HOME=/vortex/hermes-home");
         startInfo.ArgumentList.Add("--env");
-        startInfo.ArgumentList.Add("HOME=/home/hermes");
+        startInfo.ArgumentList.Add("HOME=/vortex/hermes-home");
         startInfo.ArgumentList.Add("--env");
-        startInfo.ArgumentList.Add("USERPROFILE=/home/hermes");
+        startInfo.ArgumentList.Add("USERPROFILE=/vortex/hermes-home");
         startInfo.ArgumentList.Add("--env");
         startInfo.ArgumentList.Add("VORTEX_TOOL_FILE_SCOPE=workspace");
         startInfo.ArgumentList.Add("--env");
@@ -489,7 +480,7 @@ public sealed class HermesRuntime(WorkerConfig config)
         startInfo.ArgumentList.Add("VORTEX_WORKSPACE_POLICY=fail-closed-no-reparse-points");
         AddAllowedModelRouterEnvironment(startInfo);
         startInfo.ArgumentList.Add(config.DockerHermesImage);
-        var containerWorkspace = new WorkspaceInfo("/workspace", "/workspace", "/home/hermes/.hermes");
+        var containerWorkspace = new WorkspaceInfo("/workspace", "/workspace", "/vortex/hermes-home");
         foreach (var argument in BuildHermesArguments(config.HermesArgumentsTemplate, job, containerWorkspace)) startInfo.ArgumentList.Add(argument);
         return startInfo;
     }
@@ -829,12 +820,12 @@ public sealed record WorkerConfig(string ServerBaseUrl, string WorkerId, string 
         => inputMode is not null && (inputMode.Equals("args", StringComparison.OrdinalIgnoreCase) || inputMode.Equals("stdin", StringComparison.OrdinalIgnoreCase));
 
     public static bool IsValidHermesExecutionMode(string? executionMode)
-        => executionMode is not null && (executionMode.Equals("process", StringComparison.OrdinalIgnoreCase) || executionMode.Equals("docker", StringComparison.OrdinalIgnoreCase));
+        => string.Equals(executionMode, "docker", StringComparison.OrdinalIgnoreCase);
 
     public static string ParseHermesExecutionMode(string? executionMode)
     {
-        var mode = string.IsNullOrWhiteSpace(executionMode) ? "process" : executionMode.Trim().ToLowerInvariant();
-        if (!IsValidHermesExecutionMode(mode)) throw new InvalidOperationException("VORTEX_HERMES_EXECUTION_MODE must be 'process' or 'docker'.");
+        var mode = string.IsNullOrWhiteSpace(executionMode) ? "docker" : executionMode.Trim().ToLowerInvariant();
+        if (!IsValidHermesExecutionMode(mode)) throw new InvalidOperationException("VORTEX_HERMES_EXECUTION_MODE must be 'docker'.");
         return mode;
     }
 
@@ -994,6 +985,36 @@ public static class WorkerLog
         catch
         {
             // Logging must not interrupt queued job processing.
+        }
+    }
+}
+
+public static class HostIdentity
+{
+    [DllImport("libc", SetLastError = true)]
+    private static extern uint getuid();
+
+    [DllImport("libc", SetLastError = true)]
+    private static extern uint getgid();
+
+    public static bool TryGetCurrent(out uint uid, out uint gid)
+    {
+        uid = 0;
+        gid = 0;
+        if (OperatingSystem.IsWindows()) return false;
+        try
+        {
+            uid = getuid();
+            gid = getgid();
+            return uid != 0 && gid != 0;
+        }
+        catch (DllNotFoundException)
+        {
+            return false;
+        }
+        catch (EntryPointNotFoundException)
+        {
+            return false;
         }
     }
 }

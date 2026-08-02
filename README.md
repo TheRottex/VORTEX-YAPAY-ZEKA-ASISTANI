@@ -13,6 +13,19 @@
 
 </div>
 
+> [!IMPORTANT]
+> **Hermes Worker’ın güncel çalışma durumu**
+>
+> Hermes Worker; Vortex.Server ile HMAC doğrulamalı Worker iletişimi, Agent Job Queue hedef mimarisi, Docker tabanlı Hermes çalışma ortamı ve uygun model sağlayıcısı zinciri için geliştirilmiştir. `edge-tts` build-time preload sözleşmesiyle Hermes one-shot işleminin exit code `0` ile bitmesi hedeflenir.
+>
+> Hermes Worker şu anda sürekli çalışan merkezi bir bilgisayarda veya bulut sunucusunda aktif tutulmamaktadır. Yoğun donanım/işlem kullanımı ve sürekli açık bulut Worker maliyeti buna etkendir. Public Server’ın aktif olması yüksek kaynak tüketen Hermes Worker’ın sürekli açık olduğu anlamına gelmez.
+>
+> Daha önce kullanılan laptop Worker donanımı geliştiricinin fiziksel olarak yanında değildir. Teknomer çatısındaki donanıma uzaktan erişim ve fiziksel kurulum koşulları nedeniyle geçici olarak yeniden etkinleştirilememiştir. Bu durum Teknomer’e olumsuz anlam yüklemez; yalnız fiziksel erişim ve kurulum koşuludur.
+>
+> Bu geçici durum Hermes Worker’ın bozuk, başarısız, hiç çalışmamış veya projenin terk edilmiş olduğu anlamına gelmez. Yerel son kullanıcı sistemi geliştirme aşamasındadır; yalnız mevcut gerçek dosya ve test durumu üzerinden kullanılmalıdır. Ayrıntılar: [Vortex Local Hermes Worker Kurulum Rehberi](Vortex.LocalHermesWorker/README.md).
+>
+> [GÖRSEL EKLENECEK: Merkezi Hermes Worker ve yerel Hermes Worker çalışma modeli]
+
 ---
 
 ## Hızlı navigasyon
