@@ -16,15 +16,24 @@
 > [!IMPORTANT]
 > **Hermes Worker’ın güncel çalışma durumu**
 >
-> Hermes Worker; Vortex.Server ile HMAC doğrulamalı Worker iletişimi, Agent Job Queue hedef mimarisi, Docker tabanlı Hermes çalışma ortamı ve uygun model sağlayıcısı zinciri için geliştirilmiştir. `edge-tts` build-time preload sözleşmesiyle Hermes one-shot işleminin exit code `0` ile bitmesi hedeflenir.
+> Hermes Worker; Vortex.Server ile HMAC doğrulamalı Worker iletişimi, Agent Job Queue hedef mimarisi, Docker tabanlı Hermes çalışma ortamı ve uygun model sağlayıcısı zinciri için geliştirilmiştir. `edge-tts`, build-time preload sözleşmesiyle hazırlanır ve Hermes one-shot işleminin exit code `0` ile tamamlanması hedeflenir.
 >
-> Hermes Worker şu anda sürekli çalışan merkezi bir bilgisayarda veya bulut sunucusunda aktif tutulmamaktadır. Yoğun donanım/işlem kullanımı ve sürekli açık bulut Worker maliyeti buna etkendir. Public Server’ın aktif olması yüksek kaynak tüketen Hermes Worker’ın sürekli açık olduğu anlamına gelmez.
+> **Merkezi Hermes Worker şu anda geçici olarak genel ağda aktif değildir.** Yoğun donanım kullanımı ve sürekli açık bir bulut Worker’ın oluşturduğu maliyet bu durumda etkilidir. Public Vortex.Server’ın erişilebilir olması, yüksek kaynak tüketen Hermes Worker’ın da sürekli açık olduğu anlamına gelmez.
 >
-> Daha önce kullanılan laptop Worker donanımı geliştiricinin fiziksel olarak yanında değildir. Teknomer çatısındaki donanıma uzaktan erişim ve fiziksel kurulum koşulları nedeniyle geçici olarak yeniden etkinleştirilememiştir. Bu durum Teknomer’e olumsuz anlam yüklemez; yalnız fiziksel erişim ve kurulum koşuludur.
+> Daha önce kullanılan laptop Worker donanımı şu anda geliştiricinin fiziksel erişiminde değildir. Teknomer’de bulunan donanımın yeniden etkinleştirilmesi fiziksel kurulum gerektirdiğinden merkezi Hermes Worker geçici olarak devre dışıdır. Bu durum Teknomer’den değil, yalnızca donanıma erişim koşullarından kaynaklanmaktadır.
 >
-> Bu geçici durum Hermes Worker’ın bozuk, başarısız, hiç çalışmamış veya projenin terk edilmiş olduğu anlamına gelmez. Yerel son kullanıcı sistemi geliştirme aşamasındadır; yalnız mevcut gerçek dosya ve test durumu üzerinden kullanılmalıdır. Ayrıntılar: [Vortex Local Hermes Worker Kurulum Rehberi](Vortex.LocalHermesWorker/README.md).
+> **Merkezi Hermes Worker erişilebilir olmadığında uygulama, kullanıcıyı Yerel Hermes Worker çalışma modeline yönlendirmelidir.** Yerel Worker kurulmuş ve kullanıma hazırsa desteklenen işlemler kullanıcının kendi bilgisayarında yürütülebilir.
 >
-> [GÖRSEL EKLENECEK: Merkezi Hermes Worker ve yerel Hermes Worker çalışma modeli]
+> Ancak Yerel Hermes Worker ana çalışma modeli değildir. Her kullanıcının işlemci, bellek, ekran kartı ve depolama özellikleri Hermes işlemlerini çalıştırmaya yeterli olmayabilir. Ayrıca kişisel bilgisayarlar sürekli açık olmadığından merkezi sistemin sağladığı 7/24 görev kabulü ve sunucu akışından yararlanılamaz. Bu nedenle projenin ana mimarisinde donanımdan bağımsız kullanım, merkezi görev kuyruğu ve kesintisiz hizmet amacıyla Server ve merkezi Hermes Worker modeli tercih edilmiştir.
+>
+> Bu geçici durum Hermes Worker’ın bozuk, başarısız, hiç çalışmamış veya projenin terk edilmiş olduğu anlamına gelmez. Yerel son kullanıcı sistemi geliştirme aşamasındadır ve yalnızca depoda bulunan gerçek dosyalar ile doğrulanmış test durumu üzerinden kullanılmalıdır.
+>
+> Ayrıntılar: [Vortex Local Hermes Worker Kurulum Rehberi](Vortex.LocalHermesWorker/README.md).
+>
+> ![Merkezi Hermes Worker erişilemediğinde gösterilen örnek hata mesajı](images/interface/raw/Ekran%20görüntüsü_2026-07-29_13-46-28.png)
+>
+> *Merkezi Hermes Worker’ın genel ağda aktif olmadığı durumda gösterilen örnek hata ekranı. Bu durumda uygulama, Yerel Hermes Worker kurulumu hazırsa kullanıcıyı yerel çalışma modeline yönlendirmelidir.*
+
 
 ---
 
