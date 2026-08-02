@@ -2,219 +2,315 @@
 
 # VORTEX Takımı ve TEKNOFEST Yolculuğu
 
-**Teknolojiyi yalnızca tüketmeyen; proje geliştiren, öğrenen ve topluma değer katmayı hedefleyen genç bir yazılım takımı.**
+**Bir okul projesiyle başlayan, her yeni çalışmada büyüyen ve VORTEX Yapay Zekâ Asistanı'na uzanan üretim yolculuğu.**
 
-[← Ana README](../README.md) · [Dokümantasyon Merkezi](README.md) · [Destekçiler](SUPPORTERS.md)
+[← Ana README](README.md) · [Mimari](ARCHITECTURE.md) · [Kurulum](SETUP.md) · [Destekçiler](./%F0%9F%A4%9D%20Project%20Supporters.md)
 
 </div>
 
 ---
 
+> [!IMPORTANT]
+> VORTEX'in hikâyesi tek bir uygulamayla başlamadı.  
+> 2024 yılında okul ortamında oluşan takım fikri; TÜBİTAK 4006 deneyimi, **Yeşil Adımlar** ve **Güvenli Gün** projeleriyle gelişti. Her çalışma; araştırma, tasarım, sunum, problem çözme ve toplumsal fayda konusunda yeni bir deneyim kazandırdı.  
+> **VORTEX Yapay Zekâ Asistanı**, bu yolculukta edinilen birikimin daha kapsamlı bir yazılım projesine dönüşmüş hâlidir.
+
 ## İçindekiler
 
-- [VORTEX kimdir?](#vortex-kimdir)
-- [Projenin hikâyesi](#projenin-hikâyesi)
+- [VORTEX'in doğuşu](#vortexin-doğuşu)
+- [Takım hikâyesi](#takım-hikâyesi)
+- [Proje yolculuğu](#proje-yolculuğu)
+- [Yeşil Adımlar](#yeşil-adımlar)
+- [Güvenli Gün](#güvenli-gün)
+- [VORTEX Yapay Zekâ Asistanı'na geçiş](#vortex-yapay-zekâ-asistanına-geçiş)
 - [TEKNOFEST 2026 yolculuğu](#teknofest-2026-yolculuğu)
-- [Takım üyeleri](#takım-üyeleri)
-- [Görev ve sorumluluk modeli](#görev-ve-sorumluluk-modeli)
-- [Takım kültürü](#takım-kültürü)
-- [Çalışma yaklaşımı](#çalışma-yaklaşımı)
-- [Teknik ilgi alanları](#teknik-ilgi-alanları)
-- [Hedefler](#hedefler)
+- [Projedeki isimler](#projedeki-isimler)
+- [Gelecek perspektifi](#gelecek-perspektifi)
 - [Katkılarıyla](#katkılarıyla)
 - [İlgili belgeler](#ilgili-belgeler)
 
-## VORTEX kimdir?
+---
 
-VORTEX; yerli yazılım üretimi, güvenli kullanıcı deneyimi ve sürdürülebilir teknoloji çözümleri odağında çalışan genç bir yazılım takımıdır.
+## VORTEX'in doğuşu
 
-Takım, teknolojiyi yalnızca kullanan değil; araştıran, tasarlayan, geliştiren, test eden ve öğrendiklerini yeni projelere aktaran bir üretim kültürü oluşturmayı hedefler.
+VORTEX, 2024 yılında **Yenimahalle Şehit Mehmet Şengül Mesleki ve Teknik Anadolu Lisesi** bünyesinde, yazılım geliştirmeye ilgi duyan öğrencilerin ortak üretim isteğiyle ortaya çıktı.
 
-VORTEX Yapay Zekâ Asistanı bu yaklaşımın:
+Kuruluş amacı yalnızca yarışmalara proje hazırlamak değildi. Asıl hedef;
 
-- güvenli,
-- erişilebilir,
-- kullanıcı odaklı,
-- teknik olarak geliştirilebilir,
-- dokümante edilebilir
+- yazılım alanında teknik yetkinlik kazanmak,
+- gerçek dünya problemlerine çözüm üretmek,
+- yeni teknolojileri araştırmak,
+- açık kaynak ve yerli platformlarda projeler geliştirmek,
+- edinilen bilgiyi sürdürülebilir çalışmalara dönüştürmekti.
 
-bir ürün çalışmasına dönüşmüş hâlidir.
+VORTEX adı, zaman içinde yalnızca bir takım adını değil; araştırma, üretme ve her projeden yeni bir şey öğrenme anlayışını temsil etmeye başladı.
 
-## Projenin hikâyesi
+---
 
-VORTEX'in temelleri, ekip üyelerinin yazılım ve uygulama geliştirmeye duyduğu ortak ilgiyle atıldı. TÜBİTAK 4006 Bilim Fuarı deneyimi, bireysel teknik merakı ortak üretim kültürüne dönüştüren önemli başlangıçlardan biri oldu.
+## Takım hikâyesi
 
-Bu süreçte ekip yalnızca kod yazmaya değil, bir projenin tamamını oluşturan şu alanlara da odaklandı:
+Takımın temelleri, lise döneminde yazılım ve uygulama geliştirmeye duyulan ortak ilginin arkadaşlık ve takım çalışmasıyla birleşmesiyle atıldı.
 
-- problem ve ihtiyaç analizi,
-- sistem mimarisi,
-- backend geliştirme,
-- kullanıcı deneyimi,
-- görsel tasarım,
-- test ve doğrulama,
-- proje planlama,
-- dokümantasyon,
-- açık kaynak yayın disiplini.
+Okulda düzenlenen **TÜBİTAK 4006 Bilim Fuarı**, bu ilginin gerçek bir projeye dönüşmesinde önemli bir dönüm noktası oldu. Fikir üretmek, projeyi eğitim kategorisine uygun hâle getirmek, uygulamayı tamamlamak ve ortaya çıkan ürünü sunmak; yazılım geliştirme yolculuğunun ilk ciddi deneyimlerini oluşturdu.
 
-VORTEX, tek seferlik bir ürün denemesi yerine öğrenme ve sürekli iyileştirme yolculuğu olarak ele alınmaktadır.
+İlk projelerde karşılaşılan zorluklar yalnızca teknik değildi. Bir fikrin;
 
-## TEKNOFEST 2026 yolculuğu
+- hedef kitlesini belirlemek,
+- anlaşılır bir senaryoya dönüştürmek,
+- çalışır bir uygulama hâline getirmek,
+- raporlamak,
+- sunmak,
+- geri bildirimlere göre yeniden düzenlemek
 
-VORTEX, TEKNOFEST 2026 başvuru sürecinde aşağıdaki hedeflerle ilerlemektedir:
+gerekiyordu.
 
-- yerli teknoloji üretimine katkı sağlamak,
-- gerçek dünya problemlerine uygulanabilir çözümler geliştirmek,
-- gençlerin teknik yetkinliğini güçlendirmek,
-- toplumsal faydayı teknoloji tasarımının merkezinde tutmak,
-- güvenli ve sorumlu yazılım geliştirme yaklaşımını göstermek.
+Bu süreç, VORTEX'in sonraki projelerinde kullanacağı çalışma alışkanlığının temelini oluşturdu.
 
-Süreç aşağıdaki çalışma döngüsünü kapsar:
+---
+
+## Proje yolculuğu
 
 ```mermaid
 flowchart LR
-    A[Fikir ve İhtiyaç] --> B[Araştırma]
-    B --> C[Teknik Planlama]
-    C --> D[Prototipleme]
-    D --> E[Test ve Geri Bildirim]
-    E --> F[İyileştirme]
-    F --> C
-    F --> G[Sunum ve Dokümantasyon]
+    A[2024<br/>Takım fikrinin oluşması]
+    B[TÜBİTAK 4006<br/>ilk ciddi proje deneyimi]
+    C[Yeşil Adımlar<br/>çevre bilinci]
+    D[Güvenli Gün<br/>iş güvenliği farkındalığı]
+    E[Teknik birikim ve<br/>proje deneyimi]
+    F[TEKNOFEST 2026]
+    G[VORTEX Yapay Zekâ Asistanı]
+
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+    E --> F
+    F --> G
 ```
 
-TEKNOFEST yolculuğu yalnız yarışma başvurusundan ibaret değildir. Takım için bu süreç; fikir geliştirme, sorumluluk paylaşma, teknik engelleri aşma ve ortaya çıkan ürünü anlaşılır biçimde anlatma deneyimidir.
+Bu akış yalnızca tamamlanan projeleri göstermiyor. Her aşama bir sonraki çalışmanın temelini oluşturdu:
 
-## Takım üyeleri
+- TÜBİTAK 4006, proje fikrini uygulanabilir bir çalışmaya dönüştürmeyi öğretti.
+- Yeşil Adımlar, çocuklara uygun içerik ve toplumsal fayda yaklaşımını güçlendirdi.
+- Güvenli Gün, senaryo tabanlı öğretim ve farkındalık tasarımına deneyim kazandırdı.
+- Bu birikim, daha kapsamlı sistem mimarisi ve yapay zekâ entegrasyonu gerektiren VORTEX Yapay Zekâ Asistanı'na zemin hazırladı.
 
-| Üye | Görev | Katkı alanı |
-| --- | --- | --- |
-| **Hüseyin Keçeli** | Danışman Öğretmen, Bilişim Teknolojileri Alan Şefi | Proje planlama ve teknik süreçlerde rehberlik; ekip üyelerinin gelişimini destekleme |
-| **Okan Özbay** | Takım Kaptanı, Kod Geliştirici | Genel koordinasyon, temel uygulama yapısı, kod geliştirme, görev dağılımı ve proje takibi |
-| **Enes Tüter** | Takım Üyesi, Yazılım Destek | Teknik destek, kod yapısı ve sistem tasarımı konusunda deneyim paylaşımı |
+---
 
-> [!NOTE]
-> Bu tablo paylaşılan takım belgesindeki görevleri yansıtır. Güncel görev değişiklikleri bu dosyada açıkça güncellenmelidir.
+## Yeşil Adımlar
 
-## Görev ve sorumluluk modeli
+**Yeşil Adımlar**, anaokulu ve ilkokul düzeyindeki çocuklara çevre bilinci kazandırmayı amaçlayan eğitici bir oyun ve sanallaştırma projesidir.
 
-### Danışmanlık ve rehberlik
+Projenin temel amacı, erken yaşta sürdürülebilirlik farkındalığı oluşturmaktı. Bu amaçla;
 
-- proje hedeflerinin netleştirilmesi,
-- teknik sürecin izlenmesi,
-- ekip üyelerinin gelişiminin desteklenmesi,
-- planlama ve sunum sürecine rehberlik.
+- etkileşimli senaryolar,
+- öğretici içerikler,
+- çocukların anlayabileceği görsel anlatım,
+- çevreye karşı doğru davranışları destekleyen görevler
 
-### Takım kaptanlığı ve geliştirme
+tasarlandı.
 
-- genel proje koordinasyonu,
-- görevlerin dağıtılması ve takibi,
-- temel uygulama yapısının geliştirilmesi,
-- kod ve dokümantasyon bütünlüğünün korunması,
-- teknik kararların ekip içinde paylaşılması.
+Projenin hazırlanma sürecindeki en önemli zorluklardan biri, uygulamayı TÜBİTAK 4006 eğitim kategorisine uygun ve anlaşılır bir yapıya dönüştürmekti.
 
-### Yazılım ve sistem desteği
+Bu çalışma; hedef kullanıcıya göre tasarım yapmanın, ortak karar almanın ve bir fikri tamamlanmış ürüne dönüştürmenin önemini gösteren ilk büyük deneyimlerden biri oldu.
 
-- kod yapısı hakkında teknik destek,
-- sistem tasarımı konusunda deneyim paylaşımı,
-- geliştirme sırasında karşılaşılan problemlerin değerlendirilmesi,
-- ekip içi teknik öğrenmeye katkı.
+---
 
-## Takım kültürü
+## Güvenli Gün
 
-VORTEX takım kültürü dört ana ilke üzerinde şekillenir:
+**Güvenli Gün**, iş kazalarının önlenmesine yönelik farkındalık oluşturmayı amaçlayan senaryo tabanlı bir oyun ve sanallaştırma projesidir.
 
-| İlke | Takımdaki karşılığı |
-| --- | --- |
-| **Ekip çalışması** | Bilgi paylaşımı, ortak karar ve karşılıklı destek |
-| **Azim** | Teknik engeller karşısında çözüm aramaya devam etmek |
-| **Disiplin** | Plan, görev takibi, test ve dokümantasyon sorumluluğu |
-| **Asla pes etmeme** | Hataları öğrenme fırsatı olarak değerlendirip projeyi geliştirmek |
+Kullanıcıya riskli durumları güvenli bir simülasyon içinde göstererek doğru davranış biçimlerini öğretmeyi hedefledi.
 
-Takım için başarı yalnızca bir özelliğin çalışması değildir. Başarı; neden çalıştığını anlayabilmek, güvenli sınırlarını tanımlamak, test edebilmek ve başkalarının da anlayabileceği şekilde belgeleyebilmektir.
+Projede;
 
-## Çalışma yaklaşımı
+- gerçek hayattan alınan risk senaryoları,
+- doğru ve yanlış davranışların karşılaştırılması,
+- kullanıcı kararlarına göre ilerleyen etkileşimler,
+- iş güvenliği farkındalığını artıran öğretici içerikler
 
-Takımın çalışma modeli aşağıdaki adımları esas alır:
+üzerinde çalışıldı.
 
-1. **İhtiyacı tanımlama** — Çözülecek problem ve hedef kullanıcı netleştirilir.
-2. **Araştırma** — Benzer çözümler, teknik seçenekler ve riskler incelenir.
-3. **Planlama** — Mimari, görev dağılımı ve doğrulama hedefleri belirlenir.
-4. **Geliştirme** — Küçük ve test edilebilir adımlarla uygulama geliştirilir.
-5. **Doğrulama** — Build, test, güvenlik ve kullanıcı deneyimi kontrolleri yapılır.
-6. **Dokümantasyon** — Kurulum, mimari, karar ve sınırlar açıklanır.
-7. **Geri bildirim** — Sonuçlar değerlendirilir ve sonraki geliştirme döngüsüne aktarılır.
+Güvenli Gün, teknolojinin yalnız eğlence için değil; bilinçlendirme ve toplumsal fayda için de kullanılabileceğini gösteren önemli çalışmalardan biri oldu.
 
-## Teknik ilgi alanları
+---
 
-Takımın çalışma ve deneyim alanları kaynak belgede aşağıdaki şekilde tanımlanmıştır:
+## VORTEX Yapay Zekâ Asistanı'na geçiş
 
-- C# ve .NET,
-- Python,
-- Java,
-- sistem mimarisi,
-- backend geliştirme,
-- oyun ve simülasyon projeleri,
-- mobil/web standartlarında UI/UX tasarımı,
-- uygulama optimizasyonu,
-- güvenli kullanıcı deneyimi,
-- test ve dokümantasyon.
+Önceki projelerde edinilen deneyimler, daha kapsamlı ve teknik bir ürün geliştirme hedefini ortaya çıkardı.
 
-Bu alanlar VORTEX projesinde tek bir teknoloji listesi olarak değil; problemin ihtiyacına göre birlikte kullanılan araçlar olarak ele alınır.
+VORTEX Yapay Zekâ Asistanı;
 
-## Hedefler
+- doğal dil ile sistem ve servis yönetimi,
+- güvenli işlem planlama,
+- kullanıcı onayı,
+- public ve private bileşen ayrımı,
+- masaüstü, Server ve Worker mimarisi,
+- yapay zekâ ve model entegrasyonları,
+- kurulum, test ve operasyon dokümantasyonu
 
-### Teknik hedefler
+gibi daha ileri düzey çalışma alanlarını bir araya getirdi.
 
-- anlaşılır ve sürdürülebilir mimari geliştirmek,
-- public ve private sistem sınırlarını korumak,
-- güvenli kimlik doğrulama ve sahiplik izolasyonu uygulamak,
-- kullanıcıya erişilebilir bir arayüz sunmak,
-- release öncesi doğrulama kültürü oluşturmak.
+Bu uygulamanın teknik tasarım, kod geliştirme, test, arayüz ve dokümantasyon süreci **Okan Özbay** tarafından yürütüldü.
 
-### Eğitim ve takım hedefleri
+Bu bilgi, takımın önceki ortak proje geçmişini küçültmek için değil; VORTEX Yapay Zekâ Asistanı özelindeki geliştirme sorumluluğunu doğru ifade etmek için belirtilmektedir.
 
-- yazılım geliştirme yetkinliğini artırmak,
-- teknik kararları gerekçelendirebilmek,
-- ekip içinde bilgi paylaşımını güçlendirmek,
-- düzenli çalışma ve görev takibi alışkanlığı kazanmak,
-- teknik çalışmayı etkili biçimde sunabilmek.
+---
 
-### Toplumsal hedefler
+## TEKNOFEST 2026 yolculuğu
 
-- gençlerin teknoloji üretimine katılımını desteklemek,
-- yerli yazılım ekosistemine değer katmak,
-- güvenli ve sorumlu dijital çözümler geliştirmek,
-- üretim sürecini açık ve anlaşılır dokümantasyonla paylaşmak.
+TEKNOFEST 2026 süreci, VORTEX'in önceki proje deneyimlerini daha kapsamlı bir hedef altında birleştirdi.
+
+Bu yolculukta;
+
+- proje fikrinin teknik bir çözüme dönüştürülmesi,
+- yarışma gereksinimlerinin incelenmesi,
+- Pardus ve yerli yazılım odağının güçlendirilmesi,
+- kurulum ve kullanım senaryolarının hazırlanması,
+- güvenlik sınırlarının belgelenmesi,
+- arayüz ve tanıtım görsellerinin oluşturulması,
+- teknik rapor ve sunum çalışmalarının yürütülmesi
+
+üzerinde çalışıldı.
+
+TEKNOFEST, yalnızca son ürünün değerlendirildiği bir yarışma değil; projenin neden geliştirildiğini, nasıl çalıştığını ve hangi probleme çözüm sunduğunu açık biçimde anlatmayı gerektiren bir süreç oldu.
+
+```mermaid
+flowchart LR
+    A[İhtiyacın belirlenmesi]
+    B[Araştırma]
+    C[Mimari tasarım]
+    D[Uygulama geliştirme]
+    E[Test ve hata giderme]
+    F[Dokümantasyon]
+    G[Sunum ve başvuru]
+    H[Geri bildirim ve geliştirme]
+
+    A --> B --> C --> D --> E --> F --> G --> H
+    H --> C
+```
+
+---
+
+## Projedeki isimler
+
+<table>
+<tr>
+
+<td align="center" valign="top" width="33%">
+  <img
+    src="images/interface/okan.png"
+    alt="Okan Özbay fotoğrafı"
+    width="190"
+    height="190"
+    style="object-fit: cover; object-position: center; border-radius: 50%;"
+  >
+  <br><br>
+  <h3>Okan Özbay</h3>
+  <strong>Takım Kaptanı</strong><br>
+  <strong>VORTEX Yapay Zekâ Asistanı Geliştiricisi</strong>
+  <br><br>
+  Uygulamanın teknik tasarımını, geliştirmesini, testlerini ve dokümantasyonunu yürüttü.
+</td>
+
+<td align="center" valign="top" width="33%">
+  <img
+    src="images/interface/hüseyin hoca.png"
+    alt="Hüseyin Keçeli fotoğrafı"
+    width="190"
+    height="190"
+    style="object-fit: cover; object-position: center; border-radius: 50%;"
+  >
+  <br><br>
+  <h3>Hüseyin Keçeli</h3>
+  <strong>Danışman Öğretmen</strong><br>
+  <strong>Bilişim Teknolojileri Alan Şefi</strong>
+  <br><br>
+  Proje sürecine danışman öğretmen olarak rehberlik etti.
+</td>
+
+<td align="center" valign="top" width="33%">
+  <img
+    src="images/interface/erdal.png"
+    alt="Erdal fotoğrafı"
+    width="190"
+    height="190"
+    style="object-fit: cover; object-position: center; border-radius: 50%;"
+  >
+  <br><br>
+  <h3>Erdal</h3>
+  <strong>Proje Destekçisi</strong>
+  <br><br>
+  Projede destekçi olarak yer aldı. Proje sürecinde ekibin yanında bulunarak çalışmalara destek verdi.
+</td>
+
+</tr>
+</table>
+
+---
+
+## Gelecek perspektifi
+
+VORTEX için tamamlanan her proje, bir sonraki hedefe giden yolda edinilmiş bir deneyimdir.
+
+Gelecek dönemde özellikle;
+
+- Pardus ve Linux tabanlı çözümler,
+- açık kaynak ve yerli platformlar,
+- güvenli yapay zekâ entegrasyonları,
+- sistem ve servis yönetimi,
+- kullanıcı dostu masaüstü uygulamaları,
+- eğitim ve farkındalık odaklı projeler
+
+üzerinde daha kapsamlı çalışmalar yapılması hedeflenmektedir.
+
+Amaç yalnızca daha büyük uygulamalar geliştirmek değildir. Her yeni projede;
+
+- teknik kaliteyi artırmak,
+- güvenliği güçlendirmek,
+- kullanıcı deneyimini geliştirmek,
+- dokümantasyon kalitesini yükseltmek,
+- üretilen çözümün gerçek bir ihtiyaca karşılık vermesini sağlamak
+
+temel hedef olmaya devam edecektir.
+
+---
 
 ## Katkılarıyla
 
-VORTEX ekibi, TEKNOFEST başvuru sürecinde sağladıkları değerli katkılar için **Keçiören Belediyesi** ve **Teknomer**'e teşekkür eder.
+VORTEX projesi, TEKNOFEST başvuru ve geliştirme sürecinde sağlanan katkılar için **Hüseyin Keçeli**, **Erdal**, **Keçiören Belediyesi** ve **Teknomer**'e teşekkür eder.
 
-Sağlanan rehberlik, bütçe desteği, çalışma imkânları, teknik destek ve proje geliştirme katkıları; ekibin fikrini daha planlı biçimde olgunlaştırmasına ve çalışmalarını sürdürülebilir bir zeminde yürütmesine yardımcı olmuştur.
+- **Hüseyin Keçeli**, danışman öğretmen olarak proje sürecine rehberlik etmiştir.
+- **Erdal**, projede destekçi olarak yer almıştır.
+- **Keçiören Belediyesi** ve **Teknomer**, başvuru süreci, çalışma imkânları ve proje geliştirme sürecinde destek sağlamıştır.
 
 <p align="center">
-  <img src="../images/partners/vortexlogo.png" alt="VORTEX logosu" height="92" />
+  <img src="images/partners/vortexlogo.png" alt="VORTEX logosu" height="92">
   &nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="../images/partners/teknomerlogo.png" alt="Teknomer logosu" height="92" />
+  <img src="images/partners/teknomerlogo.png" alt="Teknomer logosu" height="92">
 </p>
 
-Ayrıntılı teşekkür sayfası için [Destekçilerimiz](SUPPORTERS.md) belgesini inceleyin.
+Ayrıntılı teşekkür sayfası için [🤝 Project Supporters](./%F0%9F%A4%9D%20Project%20Supporters.md) belgesini inceleyin.
+
+---
 
 ## İlgili belgeler
 
 | Belge | Açıklama |
 | --- | --- |
-| [Ana README](../README.md) | Proje tanıtımı ve hızlı navigasyon |
-| [Dokümantasyon Merkezi](README.md) | Tüm public belgeler |
-| [Public Sistem Mimarisi](ARCHITECTURE.md) | Teknik sınırlar ve güvenlik modeli |
-| [Kurulum Rehberi](SETUP.md) | Yerel çalışma ve doğrulama |
-| [Destekçiler](SUPPORTERS.md) | Projeye katkı sağlayan kurumlar |
+| [Ana README](README.md) | Proje tanıtımı, hikâye, görseller ve hızlı navigasyon |
+| [Public Sistem Mimarisi](ARCHITECTURE.md) | Teknik sınırlar, bileşenler ve güvenlik modeli |
+| [Kurulum Rehberi](SETUP.md) | Yerel çalışma, yapılandırma ve doğrulama |
+| [Hermes Worker Operasyon Rehberi](VORTEX_HERMES_WORKER_README.md) | WSL, Docker, systemd, tanılama, rollback ve yedekleme |
+| [Hermes Worker Geliştirme Rehberi](Vortex.HermesWorker/HermesWorker.md) | Worker bileşeni ve geliştirme sınırları |
+| [🤝 Project Supporters](./%F0%9F%A4%9D%20Project%20Supporters.md) | Bireysel ve kurumsal destekçiler |
 
 ---
 
 <div align="center">
 
-**Ekip çalışması · Azim · Disiplin · Asla pes etmeme**
+**Her proje yeni bir deneyim, her deneyim bir sonraki hedefe atılan adımdır.**
 
-[← Ana sayfaya dön](../README.md)
+[← Ana sayfaya dön](README.md)
 
 </div>

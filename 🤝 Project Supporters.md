@@ -11,9 +11,9 @@
 ---
 
 <p align="center">
-  <img src="../images/partners/vortexlogo.png" alt="VORTEX logosu" height="95" />
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="../images/partners/teknomerlogo.png" alt="Teknomer logosu" height="95" />
+  <img src="images/partners/vortexlogo.png" alt="VORTEX logosu" height="92" />
+  &nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="images/partners/teknomerlogo.png" alt="Teknomer logosu" height="92" />
 </p>
 
 ## Teşekkür
@@ -104,6 +104,6 @@ VORTEX ekibi için destek yalnızca kısa süreli bir katkı değildir. Gençler
 
 💙 **Keçiören Belediyesi ve Teknomer'e, genç yazılım geliştiricilere verdikleri değer ve VORTEX projesine sundukları katkılar için teşekkür ederiz.**
 
-[← Ana sayfaya dön](../README.md)
+[← Ana sayfaya dön](README.md)
 
 </div>
