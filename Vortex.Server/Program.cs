@@ -9,6 +9,7 @@ builder.Services.AddSingleton<VortexDb>();
 builder.Services.AddSingleton<TokenService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<DeviceJobService>();
+builder.Services.AddScoped<HermesWorkerService>();
 builder.Services.AddRateLimiter(options =>
 {
     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
@@ -104,7 +105,57 @@ app.MapGet("/api/device-jobs/{jobId:guid}", async (Guid jobId, HttpRequest reque
     return status is null ? Results.NotFound() : Results.Ok(status);
 });
 
+app.MapPost("/api/worker/heartbeat", async (HttpRequest request, HermesWorkerService workers, CancellationToken ct) =>
+{
+    var body = await ReadBodyAsync(request, ct);
+    var workerId = await workers.AuthenticateAsync(request, body, ct);
+    if (workerId is null) return Results.Unauthorized();
+    var heartbeat = System.Text.Json.JsonSerializer.Deserialize<WorkerHeartbeatRequest>(body, new System.Text.Json.JsonSerializerOptions(System.Text.Json.JsonSerializerDefaults.Web));
+    return heartbeat is null ? Results.BadRequest() : Results.Ok(await workers.HeartbeatAsync(workerId, heartbeat, ct));
+});
+
+app.MapPost("/api/worker/jobs/claim", async (HttpRequest request, HermesWorkerService workers, CancellationToken ct) =>
+{
+    var body = await ReadBodyAsync(request, ct);
+    var workerId = await workers.AuthenticateAsync(request, body, ct);
+    if (workerId is null) return Results.Unauthorized();
+    var claim = System.Text.Json.JsonSerializer.Deserialize<WorkerClaimRequest>(body, new System.Text.Json.JsonSerializerOptions(System.Text.Json.JsonSerializerDefaults.Web));
+    if (claim is null) return Results.BadRequest();
+    var job = await workers.ClaimAsync(workerId, claim, ct);
+    return job is null ? Results.NoContent() : Results.Ok(job);
+});
+
+app.MapPost("/api/worker/jobs/{jobId:guid}/heartbeat", async (Guid jobId, HttpRequest request, HermesWorkerService workers, CancellationToken ct) =>
+{
+    var body = await ReadBodyAsync(request, ct);
+    var workerId = await workers.AuthenticateAsync(request, body, ct);
+    if (workerId is null) return Results.Unauthorized();
+    return await workers.RenewLeaseAsync(workerId, jobId, ct) ? Results.Ok() : Results.Conflict();
+});
+
+app.MapPost("/api/worker/jobs/{jobId:guid}/complete", async (Guid jobId, HttpRequest request, HermesWorkerService workers, CancellationToken ct) =>
+{
+    var body = await ReadBodyAsync(request, ct);
+    var workerId = await workers.AuthenticateAsync(request, body, ct);
+    if (workerId is null) return Results.Unauthorized();
+    var completion = System.Text.Json.JsonSerializer.Deserialize<WorkerCompleteJobRequest>(body, new System.Text.Json.JsonSerializerOptions(System.Text.Json.JsonSerializerDefaults.Web));
+    if (completion is null) return Results.BadRequest();
+    return await workers.CompleteAsync(workerId, jobId, completion, ct) switch
+    {
+        WorkerCompletionOutcome.NotFound => Results.NotFound(),
+        WorkerCompletionOutcome.Conflict => Results.Conflict(),
+        _ => Results.Ok()
+    };
+});
+
 app.Run();
+
+static async Task<byte[]> ReadBodyAsync(HttpRequest request, CancellationToken ct)
+{
+    await using var buffer = new MemoryStream();
+    await request.Body.CopyToAsync(buffer, ct);
+    return buffer.ToArray();
+}
 
 static Guid? GetAuthenticatedUserId(HttpRequest request, TokenService tokens)
 {
